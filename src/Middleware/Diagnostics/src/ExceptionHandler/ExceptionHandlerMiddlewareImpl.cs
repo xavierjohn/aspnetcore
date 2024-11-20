@@ -112,10 +112,13 @@ internal sealed class ExceptionHandlerMiddlewareImpl
 
     private async Task HandleException(HttpContext context, ExceptionDispatchInfo edi)
     {
+        DiagnosticsTelemetry.AddMetricsTags(context, edi.SourceException);
+
         var exceptionName = edi.SourceException.GetType().FullName!;
 
         if ((edi.SourceException is OperationCanceledException || edi.SourceException is IOException) && context.RequestAborted.IsCancellationRequested)
         {
+            // Don't log unhandled exception for aborted request.
             _logger.RequestAbortedException();
 
             if (!context.Response.HasStarted)
@@ -127,11 +130,10 @@ internal sealed class ExceptionHandlerMiddlewareImpl
             return;
         }
 
-        DiagnosticsTelemetry.ReportUnhandledException(_logger, context, edi.SourceException);
-
         // We can't do anything if the response has already started, just abort.
         if (context.Response.HasStarted)
         {
+            _logger.UnhandledException(edi.SourceException);
             _logger.ResponseStartedErrorHandler();
 
             _metrics.RequestException(exceptionName, ExceptionResult.Skipped, handler: null);
@@ -201,6 +203,7 @@ internal sealed class ExceptionHandlerMiddlewareImpl
                     }
                 }
             }
+
             // If the response has already started, assume exception handler was successful.
             if (context.Response.HasStarted || handled || _options.StatusCodeSelector != null || context.Response.StatusCode != StatusCodes.Status404NotFound || _options.AllowStatusCode404Response)
             {
@@ -210,9 +213,17 @@ internal sealed class ExceptionHandlerMiddlewareImpl
                     WriteDiagnosticEvent(_diagnosticListener, eventName, new { httpContext = context, exception = edi.SourceException });
                 }
 
+                if (!_options.SuppressLoggingOnHandledException)
+                {
+                    _logger.UnhandledException(edi.SourceException);
+                }
+
                 _metrics.RequestException(exceptionName, ExceptionResult.Handled, handler);
                 return;
             }
+
+            // Log original unhandled exception before it is wrapped.
+            _logger.UnhandledException(edi.SourceException);
 
             edi = ExceptionDispatchInfo.Capture(new InvalidOperationException($"The exception handler configured on {nameof(ExceptionHandlerOptions)} produced a 404 status response. " +
                 $"This {nameof(InvalidOperationException)} containing the original exception was thrown since this is often due to a misconfigured {nameof(ExceptionHandlerOptions.ExceptionHandlingPath)}. " +
@@ -222,6 +233,9 @@ internal sealed class ExceptionHandlerMiddlewareImpl
         {
             // Suppress secondary exceptions, re-throw the original.
             _logger.ErrorHandlerException(ex2);
+
+            // There was an error handling the exception. Log original unhandled exception.
+            _logger.UnhandledException(edi.SourceException);
         }
         finally
         {
