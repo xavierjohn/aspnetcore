@@ -49,8 +49,7 @@ public class ExceptionHandlerOptions
 
     /// <summary>
     /// Gets or sets a value that determines if the exception handler middleware should suppress logging
-    /// if the exception was handled by either <see cref="ExceptionHandler"/>, <see cref="IProblemDetailsService"/> or
-    /// <see cref="IExceptionHandler"/> registered in the DI container.
+    /// if the exception was handled by a <see cref="IExceptionHandler"/> registered in the DI container.
     /// </summary>
-    public bool SuppressLoggingOnHandledException { get; set; }
+    public bool SuppressLoggingIExceptionHandler { get; set; }
 }

@@ -1,3 +1,3 @@
 #nullable enable
-Microsoft.AspNetCore.Builder.ExceptionHandlerOptions.SuppressLoggingOnHandledException.get -> bool
-Microsoft.AspNetCore.Builder.ExceptionHandlerOptions.SuppressLoggingOnHandledException.set -> void
+Microsoft.AspNetCore.Builder.ExceptionHandlerOptions.SuppressLoggingIExceptionHandler.get -> bool
+Microsoft.AspNetCore.Builder.ExceptionHandlerOptions.SuppressLoggingIExceptionHandler.set -> void

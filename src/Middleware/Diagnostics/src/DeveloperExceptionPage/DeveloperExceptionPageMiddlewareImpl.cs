@@ -137,6 +137,8 @@ internal class DeveloperExceptionPageMiddlewareImpl
                 return;
             }
 
+            _logger.UnhandledException(ex);
+
             if (context.Response.HasStarted)
             {
                 _logger.ResponseStartedErrorPageMiddleware();

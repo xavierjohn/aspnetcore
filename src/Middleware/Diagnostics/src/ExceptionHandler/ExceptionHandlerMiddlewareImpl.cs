@@ -170,55 +170,67 @@ internal sealed class ExceptionHandlerMiddlewareImpl
             context.Response.StatusCode = _options.StatusCodeSelector?.Invoke(edi.SourceException) ?? DefaultStatusCode;
             context.Response.OnStarting(_clearCacheHeadersDelegate, context.Response);
 
-            string? handler = null;
-            var handled = false;
+            string? handlerTag = null;
+            var handler = Handler.None;
             foreach (var exceptionHandler in _exceptionHandlers)
             {
-                handled = await exceptionHandler.TryHandleAsync(context, edi.SourceException, context.RequestAborted);
-                if (handled)
+                if (await exceptionHandler.TryHandleAsync(context, edi.SourceException, context.RequestAborted))
                 {
-                    handler = exceptionHandler.GetType().FullName;
+                    handler = Handler.IExceptionHandler;
+                    handlerTag = exceptionHandler.GetType().FullName;
                     break;
                 }
             }
 
-            if (!handled)
+            if (handler == Handler.None)
             {
                 if (_options.ExceptionHandler is not null)
                 {
                     await _options.ExceptionHandler!(context);
+
+                    // If the response has started, assume exception handler was successful.
+                    if (context.Response.HasStarted)
+                    {
+                        handler = Handler.ExceptionHandler;
+                        if (_options.ExceptionHandlingPath.HasValue)
+                        {
+                            handlerTag = _options.ExceptionHandlingPath.Value;
+                        }
+                    }
                 }
                 else
                 {
-                    handled = await _problemDetailsService!.TryWriteAsync(new()
+                    if (await _problemDetailsService!.TryWriteAsync(new()
                     {
                         HttpContext = context,
                         AdditionalMetadata = exceptionHandlerFeature.Endpoint?.Metadata,
                         ProblemDetails = { Status = context.Response.StatusCode },
                         Exception = edi.SourceException,
-                    });
-                    if (handled)
+                    }))
                     {
-                        handler = _problemDetailsService.GetType().FullName;
+                        handler = Handler.IProblemDetailsService;
+                        handlerTag = _problemDetailsService.GetType().FullName;
                     }
                 }
             }
 
-            // If the response has already started, assume exception handler was successful.
-            if (context.Response.HasStarted || handled || _options.StatusCodeSelector != null || context.Response.StatusCode != StatusCodes.Status404NotFound || _options.AllowStatusCode404Response)
+            if (handler != Handler.None || _options.StatusCodeSelector != null || context.Response.StatusCode != StatusCodes.Status404NotFound || _options.AllowStatusCode404Response)
             {
-                const string eventName = "Microsoft.AspNetCore.Diagnostics.HandledException";
-                if (_diagnosticListener.IsEnabled() && _diagnosticListener.IsEnabled(eventName))
+                // Customers with an IExceptionHandler that reports it handled the exception could do their own logging.
+                // Don't log IExceptionHandler handled exceptions if SuppressLoggingIExceptionHandler is set to true.
+                // Note: Microsoft.AspNetCore.Diagnostics.HandledException is used by AppInsights to log errors so it's also skipped.
+                if (handler != Handler.IExceptionHandler || !_options.SuppressLoggingIExceptionHandler)
                 {
-                    WriteDiagnosticEvent(_diagnosticListener, eventName, new { httpContext = context, exception = edi.SourceException });
-                }
+                    const string eventName = "Microsoft.AspNetCore.Diagnostics.HandledException";
+                    if (_diagnosticListener.IsEnabled() && _diagnosticListener.IsEnabled(eventName))
+                    {
+                        WriteDiagnosticEvent(_diagnosticListener, eventName, new { httpContext = context, exception = edi.SourceException });
+                    }
 
-                if (!_options.SuppressLoggingOnHandledException)
-                {
                     _logger.UnhandledException(edi.SourceException);
                 }
 
-                _metrics.RequestException(exceptionName, ExceptionResult.Handled, handler);
+                _metrics.RequestException(exceptionName, ExceptionResult.Handled, handlerTag);
                 return;
             }
 
@@ -272,5 +284,13 @@ internal sealed class ExceptionHandlerMiddlewareImpl
         headers.Expires = "-1";
         headers.ETag = default;
         return Task.CompletedTask;
+    }
+
+    private enum Handler
+    {
+        None,
+        IExceptionHandler,
+        IProblemDetailsService,
+        ExceptionHandler
     }
 }

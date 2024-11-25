@@ -248,6 +248,32 @@ public class ExceptionHandlerMiddlewareTest : LoggedTest
     }
 
     [Fact]
+    public async Task Metrics_ExceptionThrown_ErrorPathHandled_Reported()
+    {
+        // Arrange
+        var httpContext = CreateHttpContext();
+        var optionsAccessor = CreateOptionsAccessor(
+            exceptionHandler: context =>
+            {
+                context.Features.Set<IHttpResponseFeature>(new TestHttpResponseFeature());
+                return Task.CompletedTask;
+            },
+            exceptionHandlingPath: "/error");
+        var meterFactory = new TestMeterFactory();
+        var middleware = CreateMiddleware(_ => throw new InvalidOperationException(), optionsAccessor, meterFactory: meterFactory);
+        var meter = meterFactory.Meters.Single();
+
+        using var diagnosticsRequestExceptionCollector = new MetricCollector<long>(meterFactory, DiagnosticsMetrics.MeterName, "aspnetcore.diagnostics.exceptions");
+
+        // Act
+        await middleware.Invoke(httpContext);
+
+        // Assert
+        Assert.Collection(diagnosticsRequestExceptionCollector.GetMeasurementSnapshot(),
+            m => AssertRequestException(m, "System.InvalidOperationException", "handled", "/error"));
+    }
+
+    [Fact]
     public async Task Metrics_ExceptionThrown_ResponseStarted_Skipped()
     {
         // Arrange
@@ -528,5 +554,10 @@ public class ExceptionHandlerMiddlewareTest : LoggedTest
         {
             throw new NotImplementedException();
         }
+    }
+
+    private class TestHttpResponseFeature : HttpResponseFeature
+    {
+        public override bool HasStarted => true;
     }
 }
