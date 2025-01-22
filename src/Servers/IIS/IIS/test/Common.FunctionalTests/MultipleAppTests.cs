@@ -39,7 +39,7 @@ public class MultipleAppTests : IISFunctionalTestBase
     }
 
     [ConditionalFact]
-    public async Task Startup()
+    public async Task StartupManyAppsSuccessful()
     {
         const int numApps = 10;
 
@@ -77,7 +77,7 @@ public class MultipleAppTests : IISFunctionalTestBase
     }
 
     [ConditionalFact]
-    public async Task Restart()
+    public async Task RestartAppShouldNotAffectOtherApps()
     {
         const int numApps = 10;
 
