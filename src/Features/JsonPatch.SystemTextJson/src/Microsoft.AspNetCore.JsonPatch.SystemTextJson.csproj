@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>ASP.NET Core support for JSON PATCH, based on System.Text.Json serialization.</Description>
-    <TargetFrameworks>$(DefaultNetCoreTargetFramework);$(DefaultNetFxTargetFramework);netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>$(DefaultNetCoreTargetFramework)</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <DefineConstants>$(DefineConstants);INTERNAL_NULLABLE_ATTRIBUTES</DefineConstants>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -16,17 +16,8 @@
     <Compile Include="$(SharedSourceRoot)CallerArgument\CallerArgumentExpressionAttribute.cs" LinkBase="Shared" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != '$(DefaultNetCoreTargetFramework)'">
-    <Compile Include="$(SharedSourceRoot)Nullable\NullableAttributes.cs" LinkBase="Shared" />
-    <Compile Include="$(SharedSourceRoot)TrimmingAttributes.cs" LinkBase="Shared" />
-  </ItemGroup>
-
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != '$(DefaultNetCoreTargetFramework)'">
-    <Reference Include="System.Text.Json" />
   </ItemGroup>
 
   <ItemGroup>

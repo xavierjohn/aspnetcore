@@ -4,8 +4,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Helpers;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal;
@@ -180,7 +182,8 @@ public class ListAdapter : IAdapter
         }
 
         var currentValue = list[positionInfo.Index];
-        if (!JsonHelper.DeepEquals(currentValue, convertedValue))
+
+        if (!JsonObject.DeepEquals(JsonSerializer.SerializeToNode(currentValue), JsonSerializer.SerializeToNode(convertedValue)))
         {
             errorMessage = Resources.FormatValueAtListPositionNotEqualToTestValue(currentValue, value, positionInfo.Index);
             return false;

@@ -10,10 +10,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
-using Microsoft.AspNetCore.JsonPatch.Converters;
 using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 using Microsoft.AspNetCore.Shared;
 
 namespace Microsoft.AspNetCore.JsonPatch;

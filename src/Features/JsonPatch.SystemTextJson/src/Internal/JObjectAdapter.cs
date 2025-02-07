@@ -4,7 +4,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Helpers;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal;
 
@@ -106,7 +106,7 @@ public class JObjectAdapter : IAdapter
             return false;
         }
 
-        if (!JsonHelper.DeepEquals(currentValue, value))
+        if (!JsonObject.DeepEquals(JsonSerializer.SerializeToNode(currentValue), JsonSerializer.SerializeToNode(value)))
         {
             errorMessage = Resources.FormatValueNotEqualToTestValue(currentValue, value, segment);
             return false;
