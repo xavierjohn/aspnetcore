@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Microsoft.AspNetCore.JsonPatch.Helpers;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Helpers;
 
 /// <summary>
 /// Return value for the helper method used by Copy/Move.  Needed to ensure we can make a different

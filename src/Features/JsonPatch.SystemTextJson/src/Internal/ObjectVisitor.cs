@@ -3,9 +3,9 @@
 
 using System;
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.Adapters;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Adapters;
 
-namespace Microsoft.AspNetCore.JsonPatch.Internal;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 
 /// <summary>
 /// This API supports infrastructure and is not intended to be used
@@ -21,7 +21,7 @@ public class ObjectVisitor
     /// Initializes a new instance of <see cref="ObjectVisitor"/>.
     /// </summary>
     /// <param name="path">The path of the JsonPatch operation</param>
-    /// <param name="contractResolver">The <see cref="IContractResolver"/>.</param>
+    /// <param name="typeInfoResolver">The <see cref="IJsonTypeInfoResolver"/>.</param>
     public ObjectVisitor(ParsedPath path, IJsonTypeInfoResolver typeInfoResolver)
         : this(path, typeInfoResolver, AdapterFactory.Default)
     {
@@ -31,7 +31,7 @@ public class ObjectVisitor
     /// Initializes a new instance of <see cref="ObjectVisitor"/>.
     /// </summary>
     /// <param name="path">The path of the JsonPatch operation</param>
-    /// <param name="contractResolver">The <see cref="IContractResolver"/>.</param>
+    /// <param name="typeInfoResolver">The <see cref="IJsonTypeInfoResolver"/>.</param>
     /// <param name="adapterFactory">The <see cref="IAdapterFactory"/> to use when creating adaptors.</param>
     public ObjectVisitor(ParsedPath path, IJsonTypeInfoResolver typeInfoResolver, IAdapterFactory adapterFactory)
     {

@@ -7,26 +7,20 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
-namespace Microsoft.AspNetCore.JsonPatch.Converters;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Converters;
 
-public class JsonPatchDocumentConverter : JsonConverter
+public class JsonPatchDocumentConverter : JsonConverter<JsonPatchDocument>
 {
     internal static DefaultJsonTypeInfoResolver DefaultContractResolver { get; } = new();
 
-    public override bool CanConvert(Type objectType)
+    public override JsonPatchDocument Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return true;
-    }
-
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
-        JsonSerializer serializer)
-    {
-        if (objectType != typeof(JsonPatchDocument))
+        if (typeToConvert != typeof(JsonPatchDocument))
         {
-            throw new ArgumentException(Resources.FormatParameterMustMatchType(nameof(objectType), "JsonPatchDocument"), nameof(objectType));
+            throw new ArgumentException(Resources.FormatParameterMustMatchType(nameof(typeToConvert), "JsonPatchDocument"), nameof(typeToConvert));
         }
 
         try
@@ -36,42 +30,34 @@ public class JsonPatchDocumentConverter : JsonConverter
                 return null;
             }
 
-            // load jObject
-            var jObject = JsonArray.Create(reader);
+            var operations = new List<Operation>();
 
-            // Create target object for Json => list of operations
-            var targetOperations = new List<Operation>();
-
-            // Create a new reader for this jObject, and set all properties
-            // to match the original reader.
-            var jObjectReader = jObject.CreateReader();
-            jObjectReader.Culture = reader.Culture;
-            jObjectReader.DateParseHandling = reader.DateParseHandling;
-            jObjectReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
-            jObjectReader.FloatParseHandling = reader.FloatParseHandling;
-
-            // Populate the object properties
-            serializer.Populate(jObjectReader, targetOperations);
+            JsonNode node = JsonArray.Parse(ref reader, new JsonNodeOptions { PropertyNameCaseInsensitive = options.PropertyNameCaseInsensitive });
+            JsonArray operationsArray = node.AsArray();
+            foreach (var item in operationsArray)
+            {
+                operations.Add(item.Deserialize<Operation>(options));
+            }
 
             // container target: the JsonPatchDocument.
-            var container = new JsonPatchDocument(targetOperations, DefaultContractResolver);
+            var container = new JsonPatchDocument(operations, DefaultContractResolver);
 
             return container;
         }
         catch (Exception ex)
         {
-            throw new JsonSerializationException(Resources.InvalidJsonPatchDocument, ex);
+            throw new JsonException(Resources.InvalidJsonPatchDocument, ex);
         }
     }
 
-    public override void WriteJson(Utf8JsonWriter writer, object value, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, JsonPatchDocument value, JsonSerializerOptions options)
     {
-        if (value is IJsonPatchDocument jsonPatchDoc)
+        writer.WriteStartArray();
+        foreach (var operation in value.Operations)
         {
-            var lst = jsonPatchDoc.GetOperations();
-
-            // write out the operations, no envelope
-            serializer.Serialize(writer, lst);
+            JsonSerializer.Serialize(writer, operation, options);
         }
+
+        writer.WriteEndArray();
     }
 }

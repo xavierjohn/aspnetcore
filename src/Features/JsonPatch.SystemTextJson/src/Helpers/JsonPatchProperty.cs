@@ -4,7 +4,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Shared;
 
-namespace Microsoft.AspNetCore.JsonPatch;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
 /// <summary>
 /// Metadata for JsonProperty.

@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 
-namespace Microsoft.AspNetCore.JsonPatch.Exceptions;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Exceptions;
 
 public class JsonPatchException : Exception
 {

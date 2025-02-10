@@ -10,7 +10,7 @@ using System.Text.Json.Serialization.Metadata;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 using Microsoft.Extensions.Internal;
 
-namespace Microsoft.AspNetCore.JsonPatch.Internal;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 
 /// <summary>
 /// This API supports infrastructure and is not intended to be used

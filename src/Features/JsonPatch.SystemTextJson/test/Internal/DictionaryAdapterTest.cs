@@ -5,12 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.Internal;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 
 public class DictionaryAdapterTest
 {

@@ -1,12 +1,14 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
-namespace Microsoft.AspNetCore.JsonPatch.Internal;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 
 /// <summary>
 /// This API supports infrastructure and is not intended to be used
@@ -22,7 +24,7 @@ public class DictionaryAdapter<TKey, TValue> : IAdapter
         out string errorMessage)
     {
         var contract = typeInfoResolver.GetTypeInfo(target.GetType(), JsonSerializerOptions.Default);
-        var key = contract.DictionaryKeyResolver(segment);
+        var key = ExtractKeyFromSegment(contract, segment);
         var dictionary = (IDictionary<TKey, TValue>)target;
 
         // As per JsonPatch spec, if a key already exists, adding should replace the existing value
@@ -49,7 +51,7 @@ public class DictionaryAdapter<TKey, TValue> : IAdapter
         out string errorMessage)
     {
         var contract = typeInfoResolver.GetTypeInfo(target.GetType(), JsonSerializerOptions.Default);
-        var key = contract.DictionaryKeyResolver(segment);
+        var key = ExtractKeyFromSegment(contract, segment);
         var dictionary = (IDictionary<TKey, TValue>)target;
 
         if (!TryConvertKey(key, out var convertedKey, out errorMessage))
@@ -77,7 +79,7 @@ public class DictionaryAdapter<TKey, TValue> : IAdapter
         out string errorMessage)
     {
         var contract = typeInfoResolver.GetTypeInfo(target.GetType(), JsonSerializerOptions.Default);
-        var key = contract.DictionaryKeyResolver(segment);
+        var key = ExtractKeyFromSegment(contract, segment);
         var dictionary = (IDictionary<TKey, TValue>)target;
 
         if (!TryConvertKey(key, out var convertedKey, out errorMessage))
@@ -104,7 +106,7 @@ public class DictionaryAdapter<TKey, TValue> : IAdapter
         out string errorMessage)
     {
         var contract = typeInfoResolver.GetTypeInfo(target.GetType(), JsonSerializerOptions.Default);
-        var key = contract.DictionaryKeyResolver(segment);
+        var key = ExtractKeyFromSegment(contract, segment);
         var dictionary = (IDictionary<TKey, TValue>)target;
 
         if (!TryConvertKey(key, out var convertedKey, out errorMessage))
@@ -138,7 +140,7 @@ public class DictionaryAdapter<TKey, TValue> : IAdapter
         out string errorMessage)
     {
         var contract = typeInfoResolver.GetTypeInfo(target.GetType(), JsonSerializerOptions.Default);
-        var key = contract.DictionaryKeyResolver(segment);
+        var key = ExtractKeyFromSegment(contract, segment);
         var dictionary = (IDictionary<TKey, TValue>)target;
 
         if (!TryConvertKey(key, out var convertedKey, out errorMessage))
@@ -185,7 +187,7 @@ public class DictionaryAdapter<TKey, TValue> : IAdapter
         out string errorMessage)
     {
         var contract = typeInfoResolver.GetTypeInfo(target.GetType(), JsonSerializerOptions.Default);
-        var key = contract.DictionaryKeyResolver(segment);
+        var key = ExtractKeyFromSegment(contract, segment);
         var dictionary = (IDictionary<TKey, TValue>)target;
 
         if (!TryConvertKey(key, out var convertedKey, out errorMessage))
@@ -206,6 +208,16 @@ public class DictionaryAdapter<TKey, TValue> : IAdapter
             errorMessage = null;
             return false;
         }
+    }
+
+#pragma warning disable IDE0060 // Remove unused parameter
+    private static string ExtractKeyFromSegment(JsonTypeInfo contract, string segment)
+#pragma warning restore IDE0060 // Remove unused parameter
+    {
+        // TODO: Implement
+
+        ;
+        throw new NotImplementedException();
     }
 
     protected virtual bool TryConvertKey(string key, out TKey convertedKey, out string errorMessage)

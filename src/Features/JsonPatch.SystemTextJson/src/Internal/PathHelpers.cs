@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-using Microsoft.AspNetCore.JsonPatch.Exceptions;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Exceptions;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
-namespace Microsoft.AspNetCore.JsonPatch.Internal;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 
 internal static class PathHelpers
 {

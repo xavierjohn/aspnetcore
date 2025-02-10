@@ -3,14 +3,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 using Microsoft.CSharp.RuntimeBinder;
 using CSharpBinder = Microsoft.CSharp.RuntimeBinder;
 
-namespace Microsoft.AspNetCore.JsonPatch.Internal;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 
 /// <summary>
 /// This API supports infrastructure and is not intended to be used
@@ -169,9 +171,9 @@ public class DynamicObjectAdapter : IAdapter
         out object value,
         out string errorMessage)
     {
-        var jsonDynamicContract = (JsonDynamicContract)typeInfoResolver.ResolveContract(target.GetType());
+        var jsonDynamicContract = typeInfoResolver.GetTypeInfo(target.GetType(), JsonSerializerOptions.Default);
 
-        var propertyName = jsonDynamicContract.PropertyNameResolver(segment);
+        var propertyName = jsonDynamicContract.Properties.Where(p => p.Name == segment).SingleOrDefault().Name;
 
         var binder = CSharpBinder.Binder.GetMember(
             CSharpBinderFlags.None,
@@ -205,9 +207,9 @@ public class DynamicObjectAdapter : IAdapter
         object value,
         out string errorMessage)
     {
-        var jsonDynamicContract = (JsonDynamicContract)typeInfoResolver.ResolveContract(target.GetType());
+        var jsonDynamicContract = typeInfoResolver.GetTypeInfo(target.GetType(), JsonSerializerOptions.Default);
 
-        var propertyName = jsonDynamicContract.PropertyNameResolver(segment);
+        var propertyName = jsonDynamicContract.Properties.Where(p => p.Name == segment).SingleOrDefault().Name;
 
         var binder = CSharpBinder.Binder.SetMember(
             CSharpBinderFlags.None,

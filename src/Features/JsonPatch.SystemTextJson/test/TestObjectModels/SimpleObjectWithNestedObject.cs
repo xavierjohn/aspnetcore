@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.AspNetCore.JsonPatch;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
 public class SimpleObjectWithNestedObject
 {

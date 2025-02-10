@@ -4,10 +4,11 @@
 using System;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
-namespace Microsoft.AspNetCore.JsonPatch.Internal;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 
 /// <summary>
 /// This API supports infrastructure and is not intended to be used
@@ -162,7 +163,7 @@ public class PocoAdapter : IAdapter
         }
 
         var currentValue = jsonProperty.Get(target);
-        if (!DeepEquals(currentValue, convertedValue))
+        if (!JsonObject.DeepEquals(JsonSerializer.SerializeToNode(currentValue), JsonSerializer.SerializeToNode(convertedValue)))
         {
             errorMessage = Resources.FormatValueNotEqualToTestValue(currentValue, value, segment);
             return false;

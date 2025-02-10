@@ -4,10 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using Microsoft.AspNetCore.JsonPatch.Exceptions;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Exceptions;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.IntegrationTests;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.IntegrationTests;
 
 public class ExpandoObjectIntegrationTest
 {

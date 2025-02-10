@@ -4,10 +4,10 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.Internal;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 using Microsoft.AspNetCore.Shared;
 
-namespace Microsoft.AspNetCore.JsonPatch.Adapters;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Adapters;
 
 /// <summary>
 /// The default AdapterFactory to be used for resolving <see cref="IAdapter"/>.

@@ -1,9 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 
-namespace Microsoft.AspNetCore.JsonPatch.Adapters;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Adapters;
 
 /// <summary>
 /// Defines the operations that can be performed on a JSON patch document.

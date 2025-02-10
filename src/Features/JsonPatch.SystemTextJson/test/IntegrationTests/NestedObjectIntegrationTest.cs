@@ -4,10 +4,9 @@
 using System;
 using System.Dynamic;
 using Microsoft.AspNetCore.Shared;
-using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.IntegrationTests;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.IntegrationTests;
 
 public class NestedObjectIntegrationTest
 {

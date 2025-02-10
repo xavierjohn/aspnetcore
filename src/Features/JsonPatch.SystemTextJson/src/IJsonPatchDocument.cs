@@ -3,13 +3,12 @@
 
 using System.Collections.Generic;
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 
-namespace Microsoft.AspNetCore.JsonPatch;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
 public interface IJsonPatchDocument
 {
-    //IContractResolver ContractResolver { get; set; }
     IJsonTypeInfoResolver TypeInfoResolver { get; set; }
 
     IList<Operation> GetOperations();

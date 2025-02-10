@@ -5,7 +5,7 @@ using System;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Shared;
 
-namespace Microsoft.AspNetCore.JsonPatch.Operations;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 
 public class OperationBase
 {

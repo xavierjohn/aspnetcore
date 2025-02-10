@@ -2,20 +2,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 
-namespace Microsoft.AspNetCore.JsonPatch.Converters;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Converters;
 
 public class TypedJsonPatchDocumentConverter : JsonPatchDocumentConverter
 {
-    public override object ReadJson(
-        Utf8JsonReader reader,
-        Type objectType,
-        object existingValue,
-        JsonSerializer serializer)
+
+    public override JsonPatchDocument Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         try
         {
@@ -24,10 +22,10 @@ public class TypedJsonPatchDocumentConverter : JsonPatchDocumentConverter
                 return null;
             }
 
-            var genericType = objectType.GenericTypeArguments[0];
+            var genericType = typeToConvert.GenericTypeArguments;
 
-            // load jObject
-            var jObject = JsonArray.Parse(ref reader);
+            // Load JsonArray
+            var jsonArray = JsonArray.Parse(ref reader);
 
             // Create target object for Json => list of operations, typed to genericType
             var genericOperation = typeof(Operation<>);
@@ -38,24 +36,24 @@ public class TypedJsonPatchDocumentConverter : JsonPatchDocumentConverter
 
             var targetOperations = Activator.CreateInstance(concreteList);
 
-            //Create a new reader for this jObject, and set all properties to match the original reader.
-            var jObjectReader = jObject.CreateReader();
-            jObjectReader.Culture = reader.Culture;
-            jObjectReader.DateParseHandling = reader.DateParseHandling;
-            jObjectReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
-            jObjectReader.FloatParseHandling = reader.FloatParseHandling;
+            // Create a new reader for this jsonArray, and set all properties to match the original reader.
+            var jsonArrayString = jsonArray.ToJsonString();
+            var jsonArrayBytes = System.Text.Encoding.UTF8.GetBytes(jsonArrayString);
+            var jsonArraySequence = new ReadOnlySequence<byte>(jsonArrayBytes);
+            var jsonArrayReader = new Utf8JsonReader(jsonArraySequence);
 
             // Populate the object properties
-            serializer.Populate(jObjectReader, targetOperations);
+            targetOperations = JsonSerializer.Deserialize(ref jsonArrayReader, concreteList, options);
 
-            // container target: the typed JsonPatchDocument.
-            var container = Activator.CreateInstance(objectType, targetOperations, JsonPatchDocumentConverter.DefaultContractResolver);
+            // Container target: the typed JsonPatchDocument.
+            var container = (JsonPatchDocument)Activator.CreateInstance(typeToConvert, targetOperations, JsonPatchDocumentConverter.DefaultContractResolver);
 
             return container;
         }
         catch (Exception ex)
         {
-            throw new JsonSerializationException(Resources.InvalidJsonPatchDocument, ex);
+            throw new JsonException("Invalid JsonPatchDocument", ex);
         }
+
     }
 }

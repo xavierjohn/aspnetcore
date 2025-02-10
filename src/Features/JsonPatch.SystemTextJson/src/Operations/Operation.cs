@@ -3,10 +3,11 @@
 
 using System;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.JsonPatch.Adapters;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Adapters;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 using Microsoft.AspNetCore.Shared;
 
-namespace Microsoft.AspNetCore.JsonPatch.Operations;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 
 public class Operation : OperationBase
 {

@@ -3,11 +3,12 @@
 
 using System;
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.Internal;
-using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 using Microsoft.AspNetCore.Shared;
 
-namespace Microsoft.AspNetCore.JsonPatch.Adapters;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Adapters;
 
 /// <inheritdoc />
 public class ObjectAdapter : IObjectAdapterWithTest
@@ -15,7 +16,7 @@ public class ObjectAdapter : IObjectAdapterWithTest
     /// <summary>
     /// Initializes a new instance of <see cref="ObjectAdapter"/>.
     /// </summary>
-    /// <param name="contractResolver">The <see cref="IJsonTypeInfoResolver"/>.</param>
+    /// <param name="typeInfoResolver">The <see cref="IJsonTypeInfoResolver"/>.</param>
     /// <param name="logErrorAction">The <see cref="Action"/> for logging <see cref="JsonPatchError"/>.</param>
     public ObjectAdapter(
         IJsonTypeInfoResolver typeInfoResolver,
@@ -27,7 +28,7 @@ public class ObjectAdapter : IObjectAdapterWithTest
     /// <summary>
     /// Initializes a new instance of <see cref="ObjectAdapter"/>.
     /// </summary>
-    /// <param name="contractResolver">The <see cref="IJsonTypeInfoResolver"/>.</param>
+    /// <param name="typeInfoResolver">The <see cref="IJsonTypeInfoResolver"/>.</param>
     /// <param name="logErrorAction">The <see cref="Action"/> for logging <see cref="JsonPatchError"/>.</param>
     /// <param name="adapterFactory">The <see cref="IAdapterFactory"/> to use when creating adaptors.</param>
     public ObjectAdapter(

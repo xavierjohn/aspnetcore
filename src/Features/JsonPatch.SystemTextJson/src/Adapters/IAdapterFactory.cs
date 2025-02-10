@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.Internal;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 
-namespace Microsoft.AspNetCore.JsonPatch.Adapters;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Adapters;
 
 /// <summary>
 /// Defines the operations used for loading an <see cref="IAdapter"/> based on the current object and ContractResolver.

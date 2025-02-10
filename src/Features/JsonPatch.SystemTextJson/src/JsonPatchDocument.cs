@@ -5,14 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.Adapters;
-using Microsoft.AspNetCore.JsonPatch.Converters;
-using Microsoft.AspNetCore.JsonPatch.Exceptions;
-using Microsoft.AspNetCore.JsonPatch.Internal;
-using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Adapters;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Converters;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Exceptions;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 using Microsoft.AspNetCore.Shared;
 
-namespace Microsoft.AspNetCore.JsonPatch;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
 // Implementation details: the purpose of this type of patch document is to allow creation of such
 // documents for cases where there's no class/DTO to work on. Typical use case: backend not built in

@@ -9,14 +9,14 @@ using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using Microsoft.AspNetCore.JsonPatch.Adapters;
-using Microsoft.AspNetCore.JsonPatch.Exceptions;
-using Microsoft.AspNetCore.JsonPatch.Internal;
-using Microsoft.AspNetCore.JsonPatch.Operations;
-using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Adapters;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Converters;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Exceptions;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 using Microsoft.AspNetCore.Shared;
 
-namespace Microsoft.AspNetCore.JsonPatch;
+namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
 // Implementation details: the purpose of this type of patch document is to ensure we can do type-checking
 // when producing a JsonPatchDocument.  However, we cannot send this "typed" over the wire, as that would require
