@@ -1,13 +1,10 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Text;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Adapters;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
-using Moq;
 using Xunit;
 
 namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Test.Adapters;
@@ -21,7 +18,7 @@ public class AdapterFactoryTests
         AdapterFactory factory = new AdapterFactory();
 
         //Act:
-        IAdapter adapter = factory.Create(new List<string>(), new DefaultContractResolver());
+        IAdapter adapter = factory.Create(new List<string>(), new DefaultJsonTypeInfoResolver());
 
         // Assert
         Assert.Equal(typeof(ListAdapter), adapter.GetType());
@@ -34,7 +31,7 @@ public class AdapterFactoryTests
         AdapterFactory factory = new AdapterFactory();
 
         //Act:
-        IAdapter adapter = factory.Create(new Dictionary<string, string>(), new DefaultContractResolver());
+        IAdapter adapter = factory.Create(new Dictionary<string, string>(), new DefaultJsonTypeInfoResolver());
 
         // Assert
         Assert.Equal(typeof(DictionaryAdapter<string, string>), adapter.GetType());
@@ -50,7 +47,7 @@ public class AdapterFactoryTests
         AdapterFactory factory = new AdapterFactory();
 
         //Act:
-        IAdapter adapter = factory.Create(new PocoModel(), new DefaultContractResolver());
+        IAdapter adapter = factory.Create(new PocoModel(), new DefaultJsonTypeInfoResolver());
 
         // Assert
         Assert.Equal(typeof(PocoAdapter), adapter.GetType());
@@ -63,7 +60,7 @@ public class AdapterFactoryTests
         AdapterFactory factory = new AdapterFactory();
 
         //Act:
-        IAdapter adapter = factory.Create(new TestDynamicObject(), new DefaultContractResolver());
+        IAdapter adapter = factory.Create(new TestDynamicObject(), new DefaultJsonTypeInfoResolver());
 
         // Assert
         Assert.Equal(typeof(DynamicObjectAdapter), adapter.GetType());

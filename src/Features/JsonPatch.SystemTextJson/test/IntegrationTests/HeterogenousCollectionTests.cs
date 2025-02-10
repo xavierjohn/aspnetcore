@@ -3,6 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Xunit;
 
 namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.IntegrationTests;
@@ -18,7 +22,7 @@ public class HeterogenousCollectionTests
             Items = new List<Shape>()
         };
 
-        var circleJObject = JObject.Parse(@"{
+        var circleJObject = JsonObject.Parse(@"{
               Type: 'Circle',
               ShapeProperty: 'Shape property',
               CircleProperty: 'Circle property'
@@ -26,7 +30,7 @@ public class HeterogenousCollectionTests
 
         var patchDocument = new JsonPatchDocument
         {
-            ContractResolver = new CanvasContractResolver()
+            TypeInfoResolver = new CanvasContractResolver()
         };
 
         patchDocument.Add("/Items/-", circleJObject);
@@ -42,57 +46,64 @@ public class HeterogenousCollectionTests
     }
 }
 
-public class CanvasContractResolver : DefaultContractResolver
+public class CanvasContractResolver : DefaultJsonTypeInfoResolver
 {
-    protected override JsonConverter ResolveContractConverter(Type objectType)
+    public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
-        if (objectType == typeof(Shape))
+        if (type == typeof(Shape))
         {
             return new ShapeJsonConverter();
         }
 
-        return base.ResolveContractConverter(objectType);
+        return base.GetTypeInfo(type, options);
     }
 }
 
-public class ShapeJsonConverter : CustomCreationConverter<Shape>
+public class ShapeJsonConverter : JsonConverter<Shape>
 {
     private const string TypeProperty = "Type";
 
-    public override bool CanRead => true;
+    //public override bool CanRead => true;
 
-    public override Shape Create(Type objectType)
+    //public override Shape Create(Type objectType)
+    //{
+    //    throw new NotImplementedException();
+    //}
+
+    //public override object ReadJson(
+    //    JsonReader reader,
+    //    Type objectType,
+    //    object existingValue,
+    //    JsonSerializer serializer)
+    //{
+    //    var jObject = JsonObject.Load(reader);
+
+    //    var target = CreateShape(jObject);
+    //    serializer.Populate(jObject.CreateReader(), target);
+
+    //    return target;
+    //}
+
+    private Shape CreateShape(JsonNode jsonNode)
     {
-        throw new NotImplementedException();
+        var typeProperty = jsonNode[TypeProperty].AsValue().ToString();
+        return typeProperty switch
+        {
+            "Circle" => new Circle(),
+            "Rectangle" => new Rectangle(),
+            _ => throw new NotSupportedException(),
+        };
     }
-
-    public override object ReadJson(
-        JsonReader reader,
-        Type objectType,
-        object existingValue,
-        JsonSerializer serializer)
+    public override Shape Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var jObject = JObject.Load(reader);
-
+        var jObject = JsonObject.Parse(reader: ref reader, new JsonNodeOptions { PropertyNameCaseInsensitive = options.PropertyNameCaseInsensitive });
         var target = CreateShape(jObject);
-        serializer.Populate(jObject.CreateReader(), target);
-
+        options.GetConverter(target.GetType()).Convert(ref reader, target.GetType(), options);
         return target;
     }
 
-    private Shape CreateShape(JObject jObject)
+    public override void Write(Utf8JsonWriter writer, Shape value, JsonSerializerOptions options)
     {
-        var typeProperty = jObject.GetValue(TypeProperty).ToString();
-
-        switch (typeProperty)
-        {
-            case "Circle":
-                return new Circle();
-
-            case "Rectangle":
-                return new Rectangle();
-        }
-
-        throw new NotSupportedException();
+        throw new NotImplementedException();
     }
 }

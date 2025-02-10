@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Text.Json.Serialization.Metadata;
 using Xunit;
 
 namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson;
@@ -13,17 +14,14 @@ public class CustomNamingStrategyTests
     public void AddProperty_ToDynamicTestObject_WithCustomNamingStrategy()
     {
         // Arrange
-        var contractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new TestNamingStrategy()
-        };
+        var contractResolver = new DefaultJsonTypeInfoResolver();
 
         dynamic targetObject = new DynamicTestObject();
         targetObject.Test = 1;
 
         var patchDocument = new JsonPatchDocument();
         patchDocument.Add("NewInt", 1);
-        patchDocument.ContractResolver = contractResolver;
+        patchDocument.TypeInfoResolver = contractResolver;
 
         // Act
         patchDocument.ApplyTo(targetObject);
@@ -37,10 +35,7 @@ public class CustomNamingStrategyTests
     public void CopyPropertyValue_ToDynamicTestObject_WithCustomNamingStrategy()
     {
         // Arrange
-        var contractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new TestNamingStrategy()
-        };
+        var contractResolver = new DefaultJsonTypeInfoResolver();
 
         dynamic targetObject = new DynamicTestObject();
         targetObject.customStringProperty = "A";
@@ -48,7 +43,7 @@ public class CustomNamingStrategyTests
 
         var patchDocument = new JsonPatchDocument();
         patchDocument.Copy("StringProperty", "AnotherStringProperty");
-        patchDocument.ContractResolver = contractResolver;
+        patchDocument.TypeInfoResolver = contractResolver;
 
         // Act
         patchDocument.ApplyTo(targetObject);
@@ -61,10 +56,7 @@ public class CustomNamingStrategyTests
     public void MovePropertyValue_ForExpandoObject_WithCustomNamingStrategy()
     {
         // Arrange
-        var contractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new TestNamingStrategy()
-        };
+        var contractResolver = new DefaultJsonTypeInfoResolver();
 
         dynamic targetObject = new ExpandoObject();
         targetObject.customStringProperty = "A";
@@ -72,7 +64,7 @@ public class CustomNamingStrategyTests
 
         var patchDocument = new JsonPatchDocument();
         patchDocument.Move("StringProperty", "AnotherStringProperty");
-        patchDocument.ContractResolver = contractResolver;
+        patchDocument.TypeInfoResolver = contractResolver;
 
         // Act
         patchDocument.ApplyTo(targetObject);
@@ -88,10 +80,7 @@ public class CustomNamingStrategyTests
     public void RemoveProperty_FromDictionaryObject_WithCustomNamingStrategy()
     {
         // Arrange
-        var contractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new TestNamingStrategy()
-        };
+        var contractResolver = new DefaultJsonTypeInfoResolver();
 
         var targetObject = new Dictionary<string, int>()
             {
@@ -100,7 +89,7 @@ public class CustomNamingStrategyTests
 
         var patchDocument = new JsonPatchDocument();
         patchDocument.Remove("Test");
-        patchDocument.ContractResolver = contractResolver;
+        patchDocument.TypeInfoResolver = contractResolver;
 
         // Act
         patchDocument.ApplyTo(targetObject);
@@ -115,17 +104,14 @@ public class CustomNamingStrategyTests
     public void ReplacePropertyValue_ForExpandoObject_WithCustomNamingStrategy()
     {
         // Arrange
-        var contractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new TestNamingStrategy()
-        };
+        var contractResolver = new DefaultJsonTypeInfoResolver();
 
         dynamic targetObject = new ExpandoObject();
         targetObject.customTest = 1;
 
         var patchDocument = new JsonPatchDocument();
         patchDocument.Replace("Test", 2);
-        patchDocument.ContractResolver = contractResolver;
+        patchDocument.TypeInfoResolver = contractResolver;
 
         // Act
         patchDocument.ApplyTo(targetObject);
@@ -134,18 +120,18 @@ public class CustomNamingStrategyTests
         Assert.Equal(2, targetObject.customTest);
     }
 
-    private class TestNamingStrategy : NamingStrategy
-    {
-        public new bool ProcessDictionaryKeys => true;
+    //private class TestNamingStrategy : NamingStrategy
+    //{
+    //    public new bool ProcessDictionaryKeys => true;
 
-        public override string GetDictionaryKey(string key)
-        {
-            return "custom" + key;
-        }
+    //    public override string GetDictionaryKey(string key)
+    //    {
+    //        return "custom" + key;
+    //    }
 
-        protected override string ResolvePropertyName(string name)
-        {
-            return name;
-        }
-    }
+    //    protected override string ResolvePropertyName(string name)
+    //    {
+    //        return name;
+    //    }
+    //}
 }
