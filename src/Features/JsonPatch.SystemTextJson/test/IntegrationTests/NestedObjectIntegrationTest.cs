@@ -3,6 +3,8 @@
 
 using System;
 using System.Dynamic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Shared;
 using Xunit;
 
@@ -45,8 +47,8 @@ public class NestedObjectIntegrationTest
         var patchDocument = new JsonPatchDocument<SimpleObjectWithNestedObject>();
         patchDocument.Replace(o => o.NestedObject, newNested);
 
-        var serialized = JsonConvert.SerializeObject(patchDocument);
-        var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
+        var serialized = JsonSerializer.Serialize(patchDocument);
+        var deserialized = JsonSerializer.Deserialize<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
 
         // Act
         deserialized.ApplyTo(targetObject);

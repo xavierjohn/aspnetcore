@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json.Serialization.Metadata;
 using Xunit;
 
 namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
@@ -19,7 +20,7 @@ public class DictionaryAdapterTest
         var dictionary = new Dictionary<string, int>(StringComparer.Ordinal);
         dictionary[key] = 404;
         var dictionaryAdapter = new DictionaryAdapter<string, int>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var addStatus = dictionaryAdapter.TryAdd(dictionary, key, resolver, 200, out var message);
@@ -39,7 +40,7 @@ public class DictionaryAdapterTest
         var dictionary = new Dictionary<int, object>();
         dictionary[intKey] = "Mike";
         var dictionaryAdapter = new DictionaryAdapter<int, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var addStatus = dictionaryAdapter.TryAdd(dictionary, intKey.ToString(CultureInfo.InvariantCulture), resolver, "James", out var message);
@@ -56,7 +57,7 @@ public class DictionaryAdapterTest
     {
         // Arrange
         var dictionaryAdapter = new DictionaryAdapter<int, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var key = 1;
         var dictionary = new Dictionary<int, object>();
 
@@ -84,7 +85,7 @@ public class DictionaryAdapterTest
     {
         // Arrange
         var dictionaryAdapter = new DictionaryAdapter<string, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var nameKey = "Name";
         var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
 
@@ -111,7 +112,7 @@ public class DictionaryAdapterTest
     {
         // Arrange
         var dictionaryAdapter = new DictionaryAdapter<string, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var nameKey = "Name";
         var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
 
@@ -141,7 +142,7 @@ public class DictionaryAdapterTest
         var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
         dictionary.Add(nameKey, "Mike");
         var dictionaryAdapter = new DictionaryAdapter<string, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var replaceStatus = dictionaryAdapter.TryReplace(dictionary, nameKey, resolver, "James", out var message);
@@ -161,7 +162,7 @@ public class DictionaryAdapterTest
         var dictionary = new Dictionary<Guid, object>();
         dictionary.Add(guidKey, "Mike");
         var dictionaryAdapter = new DictionaryAdapter<Guid, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var replaceStatus = dictionaryAdapter.TryReplace(dictionary, guidKey.ToString(), resolver, "James", out var message);
@@ -181,7 +182,7 @@ public class DictionaryAdapterTest
         var dictionary = new Dictionary<Guid, int>();
         dictionary.Add(guidKey, 5);
         var dictionaryAdapter = new DictionaryAdapter<Guid, int>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var replaceStatus = dictionaryAdapter.TryReplace(dictionary, guidKey.ToString(), resolver, "test", out var message);
@@ -199,7 +200,7 @@ public class DictionaryAdapterTest
         var nameKey = "Name";
         var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
         var dictionaryAdapter = new DictionaryAdapter<string, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var replaceStatus = dictionaryAdapter.TryReplace(dictionary, nameKey, resolver, "Mike", out var message);
@@ -217,7 +218,7 @@ public class DictionaryAdapterTest
         var nameKey = "Name";
         var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
         var dictionaryAdapter = new DictionaryAdapter<string, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var removeStatus = dictionaryAdapter.TryRemove(dictionary, nameKey, resolver, out var message);
@@ -259,7 +260,7 @@ public class DictionaryAdapterTest
         var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
         dictionary[nameKey] = "James";
         var dictionaryAdapter = new DictionaryAdapter<string, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var removeStatus = dictionaryAdapter.TryRemove(dictionary, nameKey, resolver, out var message);
@@ -278,7 +279,7 @@ public class DictionaryAdapterTest
         var dictionary = new Dictionary<Uri, object>();
         dictionary[uriKey] = "James";
         var dictionaryAdapter = new DictionaryAdapter<Uri, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var removeStatus = dictionaryAdapter.TryRemove(dictionary, uriKey.ToString(), resolver, out var message);
@@ -303,7 +304,7 @@ public class DictionaryAdapterTest
             };
         dictionary[key] = value;
         var dictionaryAdapter = new DictionaryAdapter<string, List<object>>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var testStatus = dictionaryAdapter.TryTest(dictionary, key, resolver, value, out var message);
@@ -321,7 +322,7 @@ public class DictionaryAdapterTest
         var dictionary = new Dictionary<string, object>();
         dictionary[key] = "James";
         var dictionaryAdapter = new DictionaryAdapter<string, object>();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var expectedErrorMessage = "The current value 'James' at path 'Name' is not equal to the test value 'John'.";
 
         // Act

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson.IntegrationTests;
 using Xunit;
 
@@ -16,7 +17,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"
@@ -36,7 +37,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"
@@ -56,7 +57,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"
@@ -76,7 +77,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"
@@ -97,7 +98,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"
@@ -117,7 +118,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"
@@ -137,7 +138,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"
@@ -157,7 +158,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Age = 25
@@ -179,7 +180,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"
@@ -221,7 +222,7 @@ public class PocoAdapterTest
     public void TryTest_DoesNotThrowException_IfTestSuccessful()
     {
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"
@@ -241,7 +242,7 @@ public class PocoAdapterTest
     {
         // Arrange
         var adapter = new PocoAdapter();
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var model = new Customer
         {
             Name = "Joana"

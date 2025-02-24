@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Linq;
+using System.Text.Json.Serialization;
 using Xunit;
 
 namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson;
@@ -57,31 +58,27 @@ public class JsonPatchDocumentJsonPropertyAttributeTest
 
     private class JsonPropertyObject
     {
-        [JsonProperty("AnotherName")]
+        [JsonPropertyName("AnotherName")]
         public string Name { get; set; }
     }
 
     private class JsonPropertyObjectWithStrangeNames
     {
-        [JsonProperty("First Name.")]
+        [JsonPropertyName("First Name.")]
         public string FirstName { get; set; }
 
-        [JsonProperty("Last\\Name")]
+        [JsonPropertyName("Last\\Name")]
         public string LastName { get; set; }
     }
 
     private class JsonPropertyWithNoPropertyName
     {
-        [JsonProperty]
         public string StringProperty { get; set; }
 
-        [JsonProperty]
         public string[] ArrayProperty { get; set; }
 
-        [JsonProperty]
         public string StringProperty2 { get; set; }
 
-        [JsonProperty]
         public string SSN { get; set; }
     }
 }

@@ -50,60 +50,73 @@ public class CanvasContractResolver : DefaultJsonTypeInfoResolver
 {
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
-        if (type == typeof(Shape))
+        // Get the default metadata for the type.
+        var jsonTypeInfo = base.GetTypeInfo(type, options);
+
+        // Check if the type is Shape or derives from it.
+        if (typeof(Shape).IsAssignableFrom(type))
         {
-            return new ShapeJsonConverter();
+            // Configure polymorphism options if they haven't been set yet.
+            if (jsonTypeInfo.PolymorphismOptions == null)
+            {
+                jsonTypeInfo.PolymorphismOptions = new JsonPolymorphismOptions
+                {
+                    // Decide how to handle unknown derived types (fail in this example).
+                    UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization
+                };
+            }
+
+            // Only on the base abstract type, register known derived types.
+            if (type == typeof(Shape))
+            {
+                jsonTypeInfo.PolymorphismOptions.DerivedTypes.Add(new JsonDerivedType(typeof(Circle), "circle"));
+                jsonTypeInfo.PolymorphismOptions.DerivedTypes.Add(new JsonDerivedType(typeof(Rectangle), "rectangle"));
+            }
         }
 
-        return base.GetTypeInfo(type, options);
+        return jsonTypeInfo;
     }
 }
 
 public class ShapeJsonConverter : JsonConverter<Shape>
 {
-    private const string TypeProperty = "Type";
-
-    //public override bool CanRead => true;
-
-    //public override Shape Create(Type objectType)
-    //{
-    //    throw new NotImplementedException();
-    //}
-
-    //public override object ReadJson(
-    //    JsonReader reader,
-    //    Type objectType,
-    //    object existingValue,
-    //    JsonSerializer serializer)
-    //{
-    //    var jObject = JsonObject.Load(reader);
-
-    //    var target = CreateShape(jObject);
-    //    serializer.Populate(jObject.CreateReader(), target);
-
-    //    return target;
-    //}
-
-    private Shape CreateShape(JsonNode jsonNode)
-    {
-        var typeProperty = jsonNode[TypeProperty].AsValue().ToString();
-        return typeProperty switch
-        {
-            "Circle" => new Circle(),
-            "Rectangle" => new Rectangle(),
-            _ => throw new NotSupportedException(),
-        };
-    }
     public override Shape Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var jObject = JsonObject.Parse(reader: ref reader, new JsonNodeOptions { PropertyNameCaseInsensitive = options.PropertyNameCaseInsensitive });
-        var target = CreateShape(jObject);
-        options.GetConverter(target.GetType()).Convert(ref reader, target.GetType(), options);
-        return target;
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new JsonException();
+        }
+
+        using var doc = JsonDocument.ParseValue(ref reader);
+        var root = doc.RootElement;
+
+        if (root.TryGetProperty("CircleProperty", out _))
+        {
+            return JsonSerializer.Deserialize<Circle>(root.GetRawText(), options);
+        }
+        else if (root.TryGetProperty("RectangleProperty", out _))
+        {
+            return JsonSerializer.Deserialize<Rectangle>(root.GetRawText(), options);
+        }
+        else
+        {
+            throw new JsonException("Unknown shape type");
+        }
     }
 
     public override void Write(Utf8JsonWriter writer, Shape value, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        if (value is Circle circle)
+        {
+            JsonSerializer.Serialize(writer, circle, options);
+        }
+        else if (value is Rectangle rectangle)
+        {
+            JsonSerializer.Serialize(writer, rectangle, options);
+        }
+        else
+        {
+            throw new JsonException("Unknown shape type");
+        }
     }
 }

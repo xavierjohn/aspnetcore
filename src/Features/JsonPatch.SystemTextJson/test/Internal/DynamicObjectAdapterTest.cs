@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Collections.Generic;
+using System.Text.Json.Serialization.Metadata;
 using Xunit;
 
 namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
@@ -15,7 +16,7 @@ public class DynamicObjectAdapterTest
         var adapter = new DynamicObjectAdapter();
         dynamic target = new DynamicTestObject();
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var status = adapter.TryAdd(target, segment, resolver, "new", out string errorMessage);
@@ -35,7 +36,7 @@ public class DynamicObjectAdapterTest
         target.List = new List<int>() { 1, 2, 3 };
         var value = new List<string>() { "stringValue1", "stringValue2" };
         var segment = "List";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var status = adapter.TryAdd(target, segment, resolver, value, out string errorMessage);
@@ -53,7 +54,7 @@ public class DynamicObjectAdapterTest
         var adapter = new DynamicObjectAdapter();
         dynamic target = new DynamicTestObject();
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act 1
         var addStatus = adapter.TryAdd(target, segment, resolver, "new", out string errorMessage);
@@ -79,7 +80,7 @@ public class DynamicObjectAdapterTest
         var adapter = new DynamicObjectAdapter();
         dynamic target = new DynamicTestObject();
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var getStatus = adapter.TryGet(target, segment, resolver, out object getValue, out string getErrorMessage);
@@ -99,7 +100,7 @@ public class DynamicObjectAdapterTest
         target.NestedObject = new DynamicTestObject();
         target.NestedObject.NewProperty = "A";
         var segment = "NestedObject";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var status = adapter.TryTraverse(target, segment, resolver, out object nextTarget, out string errorMessage);
@@ -118,7 +119,7 @@ public class DynamicObjectAdapterTest
         dynamic target = new DynamicTestObject();
         target.NestedObject = new DynamicTestObject();
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var status = adapter.TryTraverse(target.NestedObject, segment, resolver, out object nextTarget, out string errorMessage);
@@ -136,7 +137,7 @@ public class DynamicObjectAdapterTest
         dynamic target = new WriteOnceDynamicTestObject();
         target.NewProperty = new object();
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var status = adapter.TryReplace(target, segment, resolver, "new", out string errorMessage);
@@ -154,7 +155,7 @@ public class DynamicObjectAdapterTest
         var adapter = new DynamicObjectAdapter();
         dynamic target = new DynamicTestObject();
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var status = adapter.TryReplace(target, segment, resolver, "test", out string errorMessage);
@@ -172,7 +173,7 @@ public class DynamicObjectAdapterTest
         dynamic target = new DynamicTestObject();
         target.NewProperty = 1;
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var status = adapter.TryReplace(target, segment, resolver, "test", out string errorMessage);
@@ -212,7 +213,7 @@ public class DynamicObjectAdapterTest
         var adapter = new DynamicObjectAdapter();
         dynamic target = new DynamicTestObject();
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act 1
         var addStatus = adapter.TryAdd(target, segment, resolver, value, out string errorMessage);
@@ -238,7 +239,7 @@ public class DynamicObjectAdapterTest
         var adapter = new DynamicObjectAdapter();
         dynamic target = new DynamicTestObject();
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var removeStatus = adapter.TryRemove(target, segment, resolver, out string removeErrorMessage);
@@ -261,7 +262,7 @@ public class DynamicObjectAdapterTest
             };
         target.NewProperty = value;
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
 
         // Act
         var testStatus = adapter.TryTest(target, segment, resolver, value, out string errorMessage);
@@ -280,7 +281,7 @@ public class DynamicObjectAdapterTest
         dynamic target = new DynamicTestObject();
         target.NewProperty = "Joana";
         var segment = "NewProperty";
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var expectedErrorMessage = $"The current value 'Joana' at path '{segment}' is not equal to the test value 'John'.";
 
         // Act

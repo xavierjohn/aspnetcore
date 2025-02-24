@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.Json.Serialization.Metadata;
 using Xunit;
 
 namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
@@ -14,7 +15,7 @@ public class ListAdapterTest
     public void Patch_OnArrayObject_Fails()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new[] { 20, 30 };
         var listAdapter = new ListAdapter();
 
@@ -30,7 +31,7 @@ public class ListAdapterTest
     public void Patch_OnNonGenericListObject_Fails()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new ArrayList();
         targetObject.Add(20);
         targetObject.Add(30);
@@ -48,7 +49,7 @@ public class ListAdapterTest
     public void Add_WithIndexSameAsNumberOfElements_Works()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<string>() { "James", "Mike" };
         var listAdapter = new ListAdapter();
         var position = targetObject.Count.ToString(CultureInfo.InvariantCulture);
@@ -70,7 +71,7 @@ public class ListAdapterTest
     public void Add_WithOutOfBoundsIndex_Fails(string position)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<string>() { "James", "Mike" };
         var listAdapter = new ListAdapter();
 
@@ -88,7 +89,7 @@ public class ListAdapterTest
     public void Patch_WithInvalidPositionFormat_Fails(string position)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<string>() { "James", "Mike" };
         var listAdapter = new ListAdapter();
 
@@ -123,7 +124,7 @@ public class ListAdapterTest
     public void Add_Appends_AtTheEnd(List<int> targetObject, List<int> expected)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var listAdapter = new ListAdapter();
 
         // Act
@@ -140,7 +141,7 @@ public class ListAdapterTest
     public void Add_NullObject_ToReferenceTypeListWorks()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var listAdapter = new ListAdapter();
         var targetObject = new List<string>() { "James", "Mike" };
 
@@ -160,7 +161,7 @@ public class ListAdapterTest
         // Arrange
         var sDto = new SimpleObject();
         var iDto = new InheritedObject();
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<SimpleObject>() { sDto };
         var listAdapter = new ListAdapter();
 
@@ -178,7 +179,7 @@ public class ListAdapterTest
     public void Add_NonCompatibleType_Fails()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>() { 10, 20 };
         var listAdapter = new ListAdapter();
 
@@ -229,7 +230,7 @@ public class ListAdapterTest
     public void Add_DifferentComplexTypeWorks(IList targetObject, object value, string position, IList expected)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var listAdapter = new ListAdapter();
 
         // Act
@@ -284,7 +285,7 @@ public class ListAdapterTest
     public void Add_KeepsObjectReference(IList targetObject, object value, string position, IList expected)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var listAdapter = new ListAdapter();
 
         // Act
@@ -304,7 +305,7 @@ public class ListAdapterTest
     public void Get_IndexOutOfBounds(int[] input, string position)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>(input);
         var listAdapter = new ListAdapter();
 
@@ -323,7 +324,7 @@ public class ListAdapterTest
     public void Get(int[] input, string position, object expected)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>(input);
         var listAdapter = new ListAdapter();
 
@@ -343,7 +344,7 @@ public class ListAdapterTest
     public void Remove_IndexOutOfBounds(int[] input, string position)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>(input);
         var listAdapter = new ListAdapter();
 
@@ -362,7 +363,7 @@ public class ListAdapterTest
     public void Remove(int[] input, string position, int[] expected)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>(input);
         var listAdapter = new ListAdapter();
 
@@ -378,7 +379,7 @@ public class ListAdapterTest
     public void Replace_NonCompatibleType_Fails()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>() { 10, 20 };
         var listAdapter = new ListAdapter();
 
@@ -394,7 +395,7 @@ public class ListAdapterTest
     public void Replace_ReplacesValue_AtTheEnd()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>() { 10, 20 };
         var listAdapter = new ListAdapter();
 
@@ -430,7 +431,7 @@ public class ListAdapterTest
     public void Replace_ReplacesValue_AtGivenPosition(string position, List<int> expected)
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>() { 10, 20 };
         var listAdapter = new ListAdapter();
 
@@ -447,7 +448,7 @@ public class ListAdapterTest
     public void Test_DoesNotThrowException_IfTestIsSuccessful()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>() { 10, 20 };
         var listAdapter = new ListAdapter();
 
@@ -463,7 +464,7 @@ public class ListAdapterTest
     public void Test_ThrowsJsonPatchException_IfTestFails()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>() { 10, 20 };
         var listAdapter = new ListAdapter();
         var expectedErrorMessage = "The current value '20' at position '1' is not equal to the test value '10'.";
@@ -480,7 +481,7 @@ public class ListAdapterTest
     public void Test_ThrowsJsonPatchException_IfListPositionOutOfBounds()
     {
         // Arrange
-        var resolver = new DefaultContractResolver();
+        var resolver = new DefaultJsonTypeInfoResolver();
         var targetObject = new List<int>() { 10, 20 };
         var listAdapter = new ListAdapter();
         var expectedErrorMessage = "The index value provided by path segment '2' is out of bounds of the array size.";

@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Text.Json.Serialization.Metadata;
 using Xunit;
 
 namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
@@ -44,7 +45,7 @@ public class ObjectVisitorTest
     public void Visit_ValidPathToArray_ReturnsListAdapter(object targetObject, string path, object expectedTargetObject)
     {
         // Arrange
-        var visitor = new ObjectVisitor(new ParsedPath(path), new DefaultContractResolver());
+        var visitor = new ObjectVisitor(new ParsedPath(path), new DefaultJsonTypeInfoResolver());
 
         // Act
         var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
@@ -77,7 +78,7 @@ public class ObjectVisitorTest
     public void Visit_ValidPathToDictionary_ReturnsDictionaryAdapter(object targetObject, string path, object expectedTargetObject)
     {
         // Arrange
-        var visitor = new ObjectVisitor(new ParsedPath(path), new DefaultContractResolver());
+        var visitor = new ObjectVisitor(new ParsedPath(path), new DefaultJsonTypeInfoResolver());
 
         // Act
         var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
@@ -106,7 +107,7 @@ public class ObjectVisitorTest
     public void Visit_ValidPathToExpandoObject_ReturnsExpandoAdapter(object targetObject, string path, object expectedTargetObject)
     {
         // Arrange
-        var contractResolver = new DefaultContractResolver();
+        var contractResolver = new DefaultJsonTypeInfoResolver();
         var visitor = new ObjectVisitor(new ParsedPath(path), contractResolver);
 
         // Act
@@ -139,7 +140,7 @@ public class ObjectVisitorTest
     public void Visit_ValidPath_ReturnsExpandoAdapter(object targetObject, string path, object expectedTargetObject)
     {
         // Arrange
-        var visitor = new ObjectVisitor(new ParsedPath(path), new DefaultContractResolver());
+        var visitor = new ObjectVisitor(new ParsedPath(path), new DefaultJsonTypeInfoResolver());
 
         // Act
         var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
@@ -157,7 +158,7 @@ public class ObjectVisitorTest
     public void Visit_InvalidIndexToArray_Fails(string position)
     {
         // Arrange
-        var visitor = new ObjectVisitor(new ParsedPath($"/Customers/{position}/States/-"), new DefaultContractResolver());
+        var visitor = new ObjectVisitor(new ParsedPath($"/Customers/{position}/States/-"), new DefaultJsonTypeInfoResolver());
         var automobileDepartment = new Class1Nested();
         object targetObject = automobileDepartment;
 
@@ -175,7 +176,7 @@ public class ObjectVisitorTest
     public void Visit_InvalidIndexFormatToArray_Fails(string position)
     {
         // Arrange
-        var visitor = new ObjectVisitor(new ParsedPath($"/Customers/{position}/States/-"), new DefaultContractResolver());
+        var visitor = new ObjectVisitor(new ParsedPath($"/Customers/{position}/States/-"), new DefaultJsonTypeInfoResolver());
         var automobileDepartment = new Class1Nested();
         object targetObject = automobileDepartment;
 
@@ -191,7 +192,7 @@ public class ObjectVisitorTest
     public void Visit_DoesNotValidate_FinalPathSegment()
     {
         // Arrange
-        var visitor = new ObjectVisitor(new ParsedPath($"/NonExisting"), new DefaultContractResolver());
+        var visitor = new ObjectVisitor(new ParsedPath($"/NonExisting"), new DefaultJsonTypeInfoResolver());
         var model = new Class1();
         object targetObject = model;
 
@@ -208,7 +209,7 @@ public class ObjectVisitorTest
     public void Visit_NullInteriorTarget_ReturnsFalse()
     {
         // Arrange
-        var visitor = new ObjectVisitor(new ParsedPath("/States/0"), new DefaultContractResolver());
+        var visitor = new ObjectVisitor(new ParsedPath("/States/0"), new DefaultJsonTypeInfoResolver());
 
         // Act
         object target = new Class1() { States = null, };
@@ -224,7 +225,7 @@ public class ObjectVisitorTest
     public void Visit_NullTarget_ReturnsNullAdapter()
     {
         // Arrange
-        var visitor = new ObjectVisitor(new ParsedPath("test"), new DefaultContractResolver());
+        var visitor = new ObjectVisitor(new ParsedPath("test"), new DefaultJsonTypeInfoResolver());
 
         // Act
         object target = null;

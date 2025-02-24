@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 
@@ -31,37 +34,86 @@ public class Canvas
     public IList<Shape> Items { get; set; }
 }
 
-public class RectangleContractResolver : DefaultContractResolver
+public class RectangleContractResolver : DefaultJsonTypeInfoResolver
 {
-    protected override JsonConverter ResolveContractConverter(Type objectType)
+    public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
-        if (objectType == typeof(Rectangle))
+        if (type == typeof(Rectangle))
         {
-            return new RectangleJsonConverter();
+            JsonTypeInfo<Rectangle> jsonTypeInfo = (JsonTypeInfo<Rectangle>)base.GetTypeInfo(type, options);
+            jsonTypeInfo.CreateObject = () => new Rectangle();
+
+            foreach (var property in jsonTypeInfo.Properties)
+            {
+                if (property.Name == nameof(Rectangle.ShapeProperty))
+                {
+                    property.Get = (obj) => ((Rectangle)obj).ShapeProperty;
+                    property.Set = (obj, value) => ((Rectangle)obj).ShapeProperty = (string)value;
+                }
+                else if (property.Name == nameof(Rectangle.RectangleProperty))
+                {
+                    property.Get = (obj) => ((Rectangle)obj).RectangleProperty;
+                    property.Set = (obj, value) => ((Rectangle)obj).RectangleProperty = (string)value;
+                }
+            }
+
+            return jsonTypeInfo;
         }
 
-        return base.ResolveContractConverter(objectType);
+        return base.GetTypeInfo(type, options);
     }
 }
 
-public class RectangleJsonConverter : CustomCreationConverter<Rectangle>
+public class RectangleJsonConverter : JsonConverter<Rectangle>
 {
-    public override bool CanRead => true;
-
-    public override Rectangle Create(Type objectType)
+    public override Rectangle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new JsonException();
+        }
+
+        var rectangle = new Rectangle();
+
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.EndObject)
+            {
+                return rectangle;
+            }
+
+            if (reader.TokenType != JsonTokenType.PropertyName)
+            {
+                throw new JsonException();
+            }
+
+            string propertyName = reader.GetString();
+
+            reader.Read();
+
+            switch (propertyName)
+            {
+                case nameof(Rectangle.ShapeProperty):
+                    rectangle.ShapeProperty = reader.GetString();
+                    break;
+                case nameof(Rectangle.RectangleProperty):
+                    rectangle.RectangleProperty = reader.GetString();
+                    break;
+                default:
+                    throw new JsonException();
+            }
+        }
+
+        throw new JsonException();
     }
 
-    public override object ReadJson(
-        JsonReader reader,
-        Type objectType,
-        object existingValue,
-        JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, Rectangle value, JsonSerializerOptions options)
     {
-        return new Rectangle()
-        {
-            RectangleProperty = reader.Value.ToString()
-        };
+        writer.WriteStartObject();
+
+        writer.WriteString(nameof(Rectangle.ShapeProperty), value.ShapeProperty);
+        writer.WriteString(nameof(Rectangle.RectangleProperty), value.RectangleProperty);
+
+        writer.WriteEndObject();
     }
 }

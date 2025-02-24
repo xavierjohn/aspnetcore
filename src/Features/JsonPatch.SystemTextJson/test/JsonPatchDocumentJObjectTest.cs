@@ -1,8 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Collections.Generic;
-using System.Dynamic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Exceptions;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Operations;
 using Xunit;
@@ -15,7 +15,7 @@ public class JsonPatchDocumentJObjectTest
     public void ApplyTo_Array_Add()
     {
         // Arrange
-        var model = new ObjectWithJObject { CustomData = JObject.FromObject(new { Emails = new[] { "foo@bar.com" } }) };
+        var model = new ObjectWithJObject { CustomData = (JsonObject)JsonSerializer.SerializeToNode(new { Emails = new[] { "foo@bar.com" } }) };
         var patch = new JsonPatchDocument<ObjectWithJObject>();
 
         patch.Operations.Add(new Operation<ObjectWithJObject>("add", "/CustomData/Emails/-", null, "foo@baz.com"));
@@ -24,14 +24,14 @@ public class JsonPatchDocumentJObjectTest
         patch.ApplyTo(model);
 
         // Assert
-        Assert.Equal("foo@baz.com", model.CustomData["Emails"][1].Value<string>());
+        Assert.Equal("foo@baz.com", model.CustomData["Emails"][1].GetValue<string>());
     }
 
     [Fact]
     public void ApplyTo_Model_Test1()
     {
         // Arrange
-        var model = new ObjectWithJObject { CustomData = JObject.FromObject(new { Email = "foo@bar.com", Name = "Bar" }) };
+        var model = new ObjectWithJObject { CustomData = (JsonObject)JsonSerializer.SerializeToNode(new { Email = "foo@bar.com", Name = "Bar" }) };
         var patch = new JsonPatchDocument<ObjectWithJObject>();
 
         patch.Operations.Add(new Operation<ObjectWithJObject>("test", "/CustomData/Email", null, "foo@baz.com"));
@@ -45,7 +45,7 @@ public class JsonPatchDocumentJObjectTest
     public void ApplyTo_Model_Test2()
     {
         // Arrange
-        var model = new ObjectWithJObject { CustomData = JObject.FromObject(new { Email = "foo@bar.com", Name = "Bar" }) };
+        var model = new ObjectWithJObject { CustomData = new JsonObject([new("Email", "foo@bar.com"), new("Name", "Bar")]) };
         var patch = new JsonPatchDocument<ObjectWithJObject>();
 
         patch.Operations.Add(new Operation<ObjectWithJObject>("test", "/CustomData/Email", null, "foo@bar.com"));
@@ -55,14 +55,14 @@ public class JsonPatchDocumentJObjectTest
         patch.ApplyTo(model);
 
         // Assert
-        Assert.Equal("Bar Baz", model.CustomData["Name"].Value<string>());
+        Assert.Equal("Bar Baz", model.CustomData["Name"].GetValue<string>());
     }
 
     [Fact]
     public void ApplyTo_Model_Copy()
     {
         // Arrange
-        var model = new ObjectWithJObject { CustomData = JObject.FromObject(new { Email = "foo@bar.com" }) };
+        var model = new ObjectWithJObject { CustomData = new JsonObject([new("Email", "foo@bar.com")]) };
         var patch = new JsonPatchDocument<ObjectWithJObject>();
 
         patch.Operations.Add(new Operation<ObjectWithJObject>("copy", "/CustomData/UserName", "/CustomData/Email"));
@@ -71,14 +71,14 @@ public class JsonPatchDocumentJObjectTest
         patch.ApplyTo(model);
 
         // Assert
-        Assert.Equal("foo@bar.com", model.CustomData["UserName"].Value<string>());
+        Assert.Equal("foo@bar.com", model.CustomData["UserName"].GetValue<string>());
     }
 
     [Fact]
     public void ApplyTo_Model_Remove()
     {
         // Arrange
-        var model = new ObjectWithJObject { CustomData = JObject.FromObject(new { FirstName = "Foo", LastName = "Bar" }) };
+        var model = new ObjectWithJObject { CustomData = new JsonObject([new("FirstName", "Bar"), new("LastName", "Bar")]) };
         var patch = new JsonPatchDocument<ObjectWithJObject>();
 
         patch.Operations.Add(new Operation<ObjectWithJObject>("remove", "/CustomData/LastName", null));
@@ -94,7 +94,7 @@ public class JsonPatchDocumentJObjectTest
     public void ApplyTo_Model_Move()
     {
         // Arrange
-        var model = new ObjectWithJObject { CustomData = JObject.FromObject(new { FirstName = "Bar" }) };
+        var model = new ObjectWithJObject { CustomData = new JsonObject([new("FirstName", "Bar")]) };
         var patch = new JsonPatchDocument<ObjectWithJObject>();
 
         patch.Operations.Add(new Operation<ObjectWithJObject>("move", "/CustomData/LastName", "/CustomData/FirstName"));
@@ -104,7 +104,7 @@ public class JsonPatchDocumentJObjectTest
 
         // Assert
         Assert.False(model.CustomData.ContainsKey("FirstName"));
-        Assert.Equal("Bar", model.CustomData["LastName"].Value<string>());
+        Assert.Equal("Bar", model.CustomData["LastName"].GetValue<string>());
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class JsonPatchDocumentJObjectTest
         patch.ApplyTo(model);
 
         // Assert
-        Assert.Equal("Foo", model.CustomData["Name"].Value<string>());
+        Assert.Equal("Foo", model.CustomData["Name"].GetValue<string>());
     }
 
     [Fact]
@@ -136,14 +136,14 @@ public class JsonPatchDocumentJObjectTest
         patch.ApplyTo(model);
 
         // Assert
-        Assert.Equal(JTokenType.Null, model.CustomData["Name"].Type);
+        Assert.Equal(System.Text.Json.JsonValueKind.Null, model.CustomData["Name"].GetValueKind());
     }
 
     [Fact]
     public void ApplyTo_Model_Replace()
     {
         // Arrange
-        var model = new ObjectWithJObject { CustomData = JObject.FromObject(new { Email = "foo@bar.com", Name = "Bar" }) };
+        var model = new ObjectWithJObject { CustomData = new JsonObject([new("Email", "foo@bar.com"), new("Name", "Bar")]) };
         var patch = new JsonPatchDocument<ObjectWithJObject>();
 
         patch.Operations.Add(new Operation<ObjectWithJObject>("replace", "/CustomData/Email", null, "foo@baz.com"));
@@ -152,14 +152,14 @@ public class JsonPatchDocumentJObjectTest
         patch.ApplyTo(model);
 
         // Assert
-        Assert.Equal("foo@baz.com", model.CustomData["Email"].Value<string>());
+        Assert.Equal("foo@baz.com", model.CustomData["Email"].GetValue<string>());
     }
 
     [Fact]
     public void ApplyTo_Model_Replace_Null()
     {
         // Arrange
-        var model = new ObjectWithJObject { CustomData = JObject.FromObject(new { Email = "foo@bar.com", Name = "Bar" }) };
+        var model = new ObjectWithJObject { CustomData = new JsonObject([new("Email", "foo@bar.com"), new("Name", "Bar")]) };
         var patch = new JsonPatchDocument<ObjectWithJObject>();
 
         patch.Operations.Add(new Operation<ObjectWithJObject>("replace", "/CustomData/Email", null, null));
@@ -168,6 +168,6 @@ public class JsonPatchDocumentJObjectTest
         patch.ApplyTo(model);
 
         // Assert
-        Assert.Equal(JTokenType.Null, model.CustomData["Email"].Type);
+        Assert.Equal(JsonValueKind.Null, model.CustomData["Email"].GetValueKind());
     }
 }
