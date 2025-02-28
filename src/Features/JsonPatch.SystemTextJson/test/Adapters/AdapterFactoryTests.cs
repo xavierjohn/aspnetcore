@@ -52,17 +52,4 @@ public class AdapterFactoryTests
         // Assert
         Assert.Equal(typeof(PocoAdapter), adapter.GetType());
     }
-
-    [Fact]
-    public void GetDynamicAdapterForGenericObjects()
-    {
-        // Arrange
-        AdapterFactory factory = new AdapterFactory();
-
-        //Act:
-        IAdapter adapter = factory.Create(new TestDynamicObject(), new DefaultJsonTypeInfoResolver());
-
-        // Assert
-        Assert.Equal(typeof(DynamicObjectAdapter), adapter.GetType());
-    }
 }

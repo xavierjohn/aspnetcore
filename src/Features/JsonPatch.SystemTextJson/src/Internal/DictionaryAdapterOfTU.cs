@@ -214,10 +214,8 @@ public class DictionaryAdapter<TKey, TValue> : IAdapter
     private static string ExtractKeyFromSegment(JsonTypeInfo contract, string segment)
 #pragma warning restore IDE0060 // Remove unused parameter
     {
-        // TODO: Implement
-
-        ;
-        throw new NotImplementedException();
+        return segment.ToString();
+        //return JsonSerializer.Serialize(segment, contract);
     }
 
     protected virtual bool TryConvertKey(string key, out TKey convertedKey, out string errorMessage)

@@ -17,6 +17,7 @@ public class JObjectAdapter : IAdapter
         object value,
         out string errorMessage)
     {
+        // Set the property specified by the `segment` argument to the given `value` of the `target` object.
         var obj = (JsonObject)target;
 
         obj[segment] = value != null ? JsonSerializer.SerializeToNode(value) : new JsonObject();
@@ -123,7 +124,7 @@ public class JObjectAdapter : IAdapter
         out object nextTarget,
         out string errorMessage)
     {
-        var obj = (JsonObject)target;
+        var obj = (JsonObject)JsonSerializer.SerializeToNode(target);
 
         if (!obj.TryGetPropertyValue(segment, out var nextTargetToken))
         {

@@ -82,6 +82,7 @@ public class ObjectAdapter : IObjectAdapterWithTest
         var visitor = new ObjectVisitor(parsedPath, TypeInfoResolver, AdapterFactory);
 
         var target = objectToApplyTo;
+        // Find the target object and the appropriate adapter
         if (!visitor.TryVisit(ref target, out var adapter, out var errorMessage))
         {
             var error = CreatePathNotFoundError(objectToApplyTo, path, operation, errorMessage);

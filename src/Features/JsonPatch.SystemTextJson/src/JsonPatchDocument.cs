@@ -28,7 +28,6 @@ public class JsonPatchDocument : IJsonPatchDocument
     public JsonPatchDocument()
     {
         Operations = new List<Operation>();
-        //ContractResolver = new DefaultContractResolver();
         TypeInfoResolver = new DefaultJsonTypeInfoResolver();
     }
 

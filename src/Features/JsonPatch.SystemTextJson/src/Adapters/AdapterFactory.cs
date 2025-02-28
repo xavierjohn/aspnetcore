@@ -4,6 +4,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+using System.Threading;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Internal;
 using Microsoft.AspNetCore.Shared;
 
@@ -28,10 +29,9 @@ public class AdapterFactory : IAdapterFactory
 
         return jsonContract.Kind switch
         {
-            JsonTypeInfoKind.Object => new JObjectAdapter(),
+            JsonTypeInfoKind.Object => new PocoAdapter(),//(),
             JsonTypeInfoKind.Enumerable => new ListAdapter(),
             JsonTypeInfoKind.Dictionary => (IAdapter)Activator.CreateInstance(typeof(DictionaryAdapter<,>).MakeGenericType(jsonContract.KeyType, jsonContract.ElementType)),
-            JsonTypeInfoKind.None => new PocoAdapter(),
             _ => new PocoAdapter()
         };
     }

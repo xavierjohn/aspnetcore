@@ -12,7 +12,11 @@ namespace Microsoft.AspNetCore.JsonPatch.SystemTextJson.Converters;
 
 public class TypedJsonPatchDocumentConverter : JsonPatchDocumentConverter
 {
-
+    public override bool CanConvert(Type typeToConvert)
+    {
+        var result = base.CanConvert(typeToConvert);
+        return result;
+    }
     public override JsonPatchDocument Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         try

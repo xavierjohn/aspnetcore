@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Text.Json;
+using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Converters;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson.Exceptions;
 using Xunit;
 
@@ -151,8 +152,11 @@ public class JsonPatchDocumentTest
         // Act
         var exception = Assert.Throws<JsonException>(() =>
         {
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new TypedJsonPatchDocumentConverter());
+            options.Converters.Add(new JsonPatchDocumentConverter());
             var deserialized
-                = JsonSerializer.Deserialize<JsonPatchDocument<SimpleObject>>(serialized);
+                = JsonSerializer.Deserialize<JsonPatchDocument<SimpleObject>>(serialized, options);
         });
 
         // Assert

@@ -60,4 +60,11 @@ public class JsonPatchDocumentConverter : JsonConverter<JsonPatchDocument>
 
         writer.WriteEndArray();
     }
+
+    public override bool CanConvert(Type typeToConvert)
+    {
+        if (typeToConvert == typeof(JsonPatchDocument) || typeToConvert == typeof(JsonPatchDocument<>))
+            var result = base.CanConvert(typeToConvert);
+        return result;
+    }
 }

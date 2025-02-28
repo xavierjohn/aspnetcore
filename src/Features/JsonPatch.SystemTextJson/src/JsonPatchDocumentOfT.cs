@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -716,8 +717,15 @@ public class JsonPatchDocument<TModel> : IJsonPatchDocument where TModel : class
         var jsonObjectContract = TypeInfoResolver.GetTypeInfo(memberExpression.Expression.Type, JsonSerializerOptions.Default);
         if (jsonObjectContract != null)
         {
+            var jsonName = memberExpression.Member.Name;
+            var propNameAttribute = memberExpression.Member.GetCustomAttribute<JsonPropertyNameAttribute>();
+            if (propNameAttribute is not null)
+            {
+                jsonName = propNameAttribute.Name;
+            }
+
             return jsonObjectContract.Properties
-                .First(jsonProperty => jsonProperty.AssociatedParameter.Name == memberExpression.Member.Name)
+                .First(jsonProperty => jsonProperty.Name == jsonName)
                 .Name;
         }
 
