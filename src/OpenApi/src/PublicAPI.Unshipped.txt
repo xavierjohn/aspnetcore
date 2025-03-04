@@ -1,1 +1,10 @@
 #nullable enable
+Microsoft.AspNetCore.OpenApi.IOpenApiSchemaProvider
+Microsoft.AspNetCore.OpenApi.IOpenApiSchemaProvider.GetOrCreateSchemaAsync(System.Type! type, Microsoft.AspNetCore.Mvc.ApiExplorer.ApiParameterDescription? parameterDescription = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Microsoft.OpenApi.Models.OpenApiSchema!>!
+Microsoft.AspNetCore.OpenApi.OpenApiDocumentTransformerContext.GetOrCreateSchemaAsync(System.Type! type, Microsoft.AspNetCore.Mvc.ApiExplorer.ApiParameterDescription? parameterDescription = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Microsoft.OpenApi.Models.OpenApiSchema!>!
+Microsoft.AspNetCore.OpenApi.OpenApiOperationTransformerContext.Document.get -> Microsoft.OpenApi.Models.OpenApiDocument!
+Microsoft.AspNetCore.OpenApi.OpenApiOperationTransformerContext.Document.init -> void
+Microsoft.AspNetCore.OpenApi.OpenApiOperationTransformerContext.GetOrCreateSchemaAsync(System.Type! type, Microsoft.AspNetCore.Mvc.ApiExplorer.ApiParameterDescription? parameterDescription = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Microsoft.OpenApi.Models.OpenApiSchema!>!
+Microsoft.AspNetCore.OpenApi.OpenApiSchemaTransformerContext.Document.get -> Microsoft.OpenApi.Models.OpenApiDocument!
+Microsoft.AspNetCore.OpenApi.OpenApiSchemaTransformerContext.Document.init -> void
+Microsoft.AspNetCore.OpenApi.OpenApiSchemaTransformerContext.GetOrCreateSchemaAsync(System.Type! type, Microsoft.AspNetCore.Mvc.ApiExplorer.ApiParameterDescription? parameterDescription = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Microsoft.OpenApi.Models.OpenApiSchema!>!

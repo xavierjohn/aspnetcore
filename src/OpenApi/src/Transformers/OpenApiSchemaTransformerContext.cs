@@ -3,6 +3,8 @@
 
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 
 namespace Microsoft.AspNetCore.OpenApi;
 
@@ -41,11 +43,31 @@ public sealed class OpenApiSchemaTransformerContext
     /// </summary>
     public required IServiceProvider ApplicationServices { get; init; }
 
+    /// <summary>
+    /// Gets the OpenAPI document the current schema belongs to.
+    /// </summary>
+    public required OpenApiDocument Document { get; init; }
+
     // Expose internal setters for the properties that only allow initializations to avoid allocating
     // new instances of the context for each sub-schema transformation.
     internal void UpdateJsonTypeInfo(JsonTypeInfo jsonTypeInfo, JsonPropertyInfo? jsonPropertyInfo)
     {
         _jsonTypeInfo = jsonTypeInfo;
         _jsonPropertyInfo = jsonPropertyInfo;
+    }
+
+    internal IOpenApiSchemaTransformer[] SchemaTransformers { get; init; } = [];
+
+    /// <inheritdoc />
+    public Task<OpenApiSchema> GetOrCreateSchemaAsync(Type type, ApiParameterDescription? parameterDescription = null, CancellationToken cancellationToken = default)
+    {
+        var schemaService = ApplicationServices.GetRequiredKeyedService<OpenApiSchemaService>(DocumentName);
+        return schemaService.GetOrCreateUnresolvedSchemaAsync(
+            document: Document,
+            type: type,
+            parameterDescription: parameterDescription,
+            scopedServiceProvider: ApplicationServices,
+            schemaTransformers: SchemaTransformers,
+            cancellationToken: cancellationToken);
     }
 }
