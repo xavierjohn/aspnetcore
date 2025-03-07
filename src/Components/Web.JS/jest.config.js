@@ -10,7 +10,6 @@ const ROOT_DIR = path.resolve(__dirname, '..', '..', '..');
 /** @type {import('jest').Config} */
 
 module.exports = {
-  testEnvironment: 'node',
   roots: ['<rootDir>/src','<rootDir>/test'],
   testMatch: ['**/*.test.ts'],
   moduleFileExtensions: ['js', 'ts'],

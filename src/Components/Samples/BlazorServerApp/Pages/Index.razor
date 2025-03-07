@@ -1,7 +1,96 @@
-﻿@page "/"
+﻿@inject IJSRuntime JSRuntime
+@page "/"
 
 <PageTitle>Index</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<div style="margin-top: 2em">
+    <button class="btn btn-primary" @onclick="LogDefault">Log default</button>
+</div>
+
+<div style="margin-top: 2em">
+    Message: <input type="text" @bind="Message" />
+    <button class="btn btn-primary" @onclick="() => LogMessage(Message)">Log message</button>
+</div>
+
+<div style="margin-top: 2em">
+    Title: <input type="text" @bind="NewTitle" />
+    <button class="btn btn-primary" @onclick="() => SetDocumentTitle(NewTitle)">Change title</button>
+    <button class="btn btn-primary" @onclick="() => SetDocumentTitleDirectly(NewTitle)">Change title directly</button>
+</div>
+
+<div style="margin-top: 2em">
+    <button class="btn btn-primary" @onclick="GetDocumentTitle">Get title</button>
+    <span>@CurrentTitle</span>
+</div>
+
+<div style="margin-top: 2em">
+    <span>@TestObjectDisplay</span> <br />
+    <button class="btn btn-primary" @onclick="GetTestObjectState">Get object state directly</button>
+    <button class="btn btn-primary" @onclick="GetTestObjectStateViaReferenceFromFunction">Get object state via reference from function</button>
+    <button class="btn btn-primary" @onclick="GetTestObjectStateViaReferenceFromProperty">Get object state via reference from property</button>
+</div>
+
+@code {
+    private string? Message { get; set; }
+    private string? CurrentTitle { get; set; }
+    private string? NewTitle { get; set; }
+    private string? TestObjectDisplay { get; set; }
+
+    private async Task LogDefault()
+    {
+        await JSRuntime.InvokeVoidAsync("logDefault");
+    }
+
+    private async Task LogMessage(string message)
+    {
+        await JSRuntime.InvokeVoidAsync("logMessage", message);
+        await JSRuntime.InvokeVoidAsync("console.log", $"Console: {message}");
+    }
+
+    private async Task SetDocumentTitle(string title)
+    {
+        await JSRuntime.InvokeVoidAsync("setDocumentTitle", title);
+    }
+
+    private async Task SetDocumentTitleDirectly(string title)
+    {
+        await JSRuntime.InvokeVoidAsync("document.title", title);
+    }
+
+    private async Task GetDocumentTitle()
+    {
+        CurrentTitle = await JSRuntime.InvokeAsync<string>("document.title");
+    }
+
+    private async Task GetTestObjectState()
+    {
+        var model = await JSRuntime.InvokeAsync<TestObjectModel>("getTestObject");
+        TestObjectDisplay = $"Serialized state: {model.Num} | {model.Text}";
+    }
+
+    private async Task GetTestObjectStateViaReferenceFromFunction()
+    {
+        var objectRef = await JSRuntime.InvokeAsync<IJSObjectReference>("getTestObject");
+        var numValue = await objectRef.InvokeAsync<int>("num");
+        var textValue = await objectRef.InvokeAsync<string>("text");
+        TestObjectDisplay = $"State via reference from function: {numValue} | {textValue}";
+    }
+
+    private async Task GetTestObjectStateViaReferenceFromProperty()
+    {
+        var objectRef = await JSRuntime.InvokeAsync<IJSObjectReference>("testObject");
+        var numValue = await objectRef.InvokeAsync<int>("num");
+        var textValue = await objectRef.InvokeAsync<string>("text");
+        TestObjectDisplay = $"State via reference from property: {numValue} | {textValue}";
+    }
+
+    class TestObjectModel
+    {
+        public int Num { get; set; }
+        public string? Text { get; set; }
+    }
+}

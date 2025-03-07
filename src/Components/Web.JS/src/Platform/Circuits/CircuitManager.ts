@@ -240,6 +240,8 @@ export class CircuitManager implements DotNet.DotNetCallDispatcher {
 
   // Implements DotNet.DotNetCallDispatcher
   public endInvokeJSFromDotNet(asyncHandle: number, succeeded: boolean, argsJson: any): void {
+    console.log("CircuitManager.endInvokeJSFromDotNet", asyncHandle, succeeded, argsJson);
+
     this.throwIfDispatchingWhenDisposed();
     this._connection!.send('EndInvokeJSFromDotNet', asyncHandle, succeeded, argsJson);
   }
