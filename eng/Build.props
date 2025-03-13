@@ -82,9 +82,6 @@
           <AdditionalProperties>Platform=x86</AdditionalProperties>
           <DotNetBuildPass>$(DotNetBuildPass)</DotNetBuildPass>
         </ProjectToBuild>
-        <ProjectToBuild Include="$(RepoRoot)src\Servers\IIS/IntegrationTesting.IIS\src\Microsoft.AspNetCore.Server.IntegrationTesting.IIS.csproj" >
-          <DotNetBuildPass>$(DotNetBuildPass)</DotNetBuildPass>
-        </ProjectToBuild>
       </ItemGroup>
     </When>
     <Otherwise>
