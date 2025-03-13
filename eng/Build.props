@@ -61,6 +61,13 @@
                       $(RepoRoot)src\Installers\**\*.vcxproj;
                       "
                       Condition=" '$(BuildNative)' == 'true' and '$(DotNetBuild)' == 'true' and ('$(DotNetBuildPass)' == '' or '$(DotNetBuildPass)' == '1') " />
+
+
+    <!-- This project requires inputs from x64, x86, and arm64 on Windows - therefore in the VMR, we build it in pass 2 -->
+    <ProjectToExclude Include="
+                      $(RepoRoot)src\Servers\IIS/IntegrationTesting.IIS\src\Microsoft.AspNetCore.Server.IntegrationTesting.IIS.csproj;
+                      "
+                      Condition=" '$(TargetOsName)' == 'win' and '$(DotNetBuild)' == 'true' and ('$(DotNetBuildPass)' == '' or '$(DotNetBuildPass)' == '1') " />
   </ItemGroup>
 
   <Choose>
@@ -80,6 +87,9 @@
       <ItemGroup Condition=" '$(DotNetBuild)' == 'true' AND '$(TargetOsName)' == 'win' AND '$(TargetArchitecture)' == 'x64' ">
         <ProjectToBuild Include="$(RepoRoot)src\Installers\Windows\WindowsHostingBundle\WindowsHostingBundle.wixproj">
           <AdditionalProperties>Platform=x86</AdditionalProperties>
+          <DotNetBuildPass>$(DotNetBuildPass)</DotNetBuildPass>
+        </ProjectToBuild>
+        <ProjectToBuild Include="$(RepoRoot)src\Servers\IIS/IntegrationTesting.IIS\src\Microsoft.AspNetCore.Server.IntegrationTesting.IIS.csproj" >
           <DotNetBuildPass>$(DotNetBuildPass)</DotNetBuildPass>
         </ProjectToBuild>
       </ItemGroup>
