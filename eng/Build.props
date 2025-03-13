@@ -55,6 +55,12 @@
                       $(RepoRoot)src\Servers\Kestrel\perf\PlatformBenchmarks\**\*.csproj;
                       $(RepoRoot)src\SignalR\perf\benchmarkapps\**\*.csproj;
                       " />
+
+    <!-- In the VMR, we don't build the native ANCM bits in pass 1 -->
+    <ProjectToExclude Include="
+                      $(RepoRoot)src\Installers\**\*.vcxproj;
+                      "
+                      Condition=" '$(BuildNative)' == 'true' and '$(DotNetBuild)' == 'true' and ('$(DotNetBuildPass)' == '' or '$(DotNetBuildPass)' == '1') " />
   </ItemGroup>
 
   <Choose>
