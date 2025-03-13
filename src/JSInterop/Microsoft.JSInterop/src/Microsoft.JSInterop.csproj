@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>$(DefaultNetCoreTargetFramework)</TargetFramework>
@@ -22,7 +22,9 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.JSInterop.Tests" />
+    <InternalsVisibleTo Include="Microsoft.AspNetCore.Components.Server.Tests" />
     <InternalsVisibleTo Include="Microsoft.AspNetCore.Components.WebAssembly.Tests" />
+    <InternalsVisibleTo Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication.Tests" />
   </ItemGroup>
 
 </Project>

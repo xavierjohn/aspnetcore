@@ -350,20 +350,20 @@ public class ProtectedBrowserStorageTest
         }
     }
 
-    class TestJSRuntime : IJSRuntime
+    class TestJSRuntime : TestJSRuntimeBase
     {
         public List<(string Identifier, object[] Args)> Invocations { get; }
             = new List<(string Identifier, object[] Args)>();
 
         public object NextInvocationResult { get; set; }
 
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object[] args)
+        public override ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object[] args)
         {
             Invocations.Add((identifier, args));
             return (ValueTask<TValue>)NextInvocationResult;
         }
 
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object[] args)
+        public override ValueTask<TValue> InvokeAsync<TValue>(string identifier, object[] args)
             => InvokeAsync<TValue>(identifier, cancellationToken: CancellationToken.None, args: args);
     }
 

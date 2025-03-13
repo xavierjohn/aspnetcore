@@ -109,7 +109,7 @@ public class PullFromJSDataStreamTest
         return pullFromJSDataStream;
     }
 
-    class TestJSRuntime : IJSRuntime
+    class TestJSRuntime : TestJSRuntimeBase
     {
         protected readonly byte[] _data;
 
@@ -118,7 +118,7 @@ public class PullFromJSDataStreamTest
             _data = data;
         }
 
-        public virtual ValueTask<TValue> InvokeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)] TValue>(string identifier, CancellationToken cancellationToken, object[] args)
+        public override ValueTask<TValue> InvokeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)] TValue>(string identifier, CancellationToken cancellationToken, object[] args)
         {
             Assert.Equal("Blazor._internal.getJSDataStreamChunk", identifier);
             if (typeof(TValue) != typeof(byte[]))
@@ -130,7 +130,7 @@ public class PullFromJSDataStreamTest
             return ValueTask.FromResult((TValue)(object)_data.Skip((int)offset).Take(bytesToRead).ToArray());
         }
 
-        public async ValueTask<TValue> InvokeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)] TValue>(string identifier, object[] args)
+        public override async ValueTask<TValue> InvokeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)] TValue>(string identifier, object[] args)
         {
             return await InvokeAsync<TValue>(identifier, CancellationToken.None, args);
         }

@@ -1,1 +1,7 @@
 #nullable enable
+Microsoft.JSInterop.IJSRuntime.GetValueAsync<TValue>(string! identifier) -> System.Threading.Tasks.ValueTask<TValue>
+Microsoft.JSInterop.IJSRuntime.GetValueAsync<TValue>(string! identifier, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.ValueTask<TValue>
+Microsoft.JSInterop.IJSRuntime.NewAsync(string! identifier, object?[]? args) -> System.Threading.Tasks.ValueTask<Microsoft.JSInterop.IJSObjectReference!>
+Microsoft.JSInterop.IJSRuntime.NewAsync(string! identifier, System.Threading.CancellationToken cancellationToken, object?[]? args) -> System.Threading.Tasks.ValueTask<Microsoft.JSInterop.IJSObjectReference!>
+Microsoft.JSInterop.IJSRuntime.SetValueAsync<TValue>(string! identifier, TValue value) -> System.Threading.Tasks.ValueTask
+Microsoft.JSInterop.IJSRuntime.SetValueAsync<TValue>(string! identifier, TValue value, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.ValueTask

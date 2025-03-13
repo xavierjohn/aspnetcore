@@ -57,10 +57,10 @@ export module DotNet {
             throw new Error(`The value '${identifier}' is not a function.`);
         }
 
-        public resolveMember(identifier: string): ObjectMemberDescriptor {
+        public findMember(identifier: string): ObjectMemberDescriptor {
             let current: any = this._jsObject;
             let parent: any = null;
-            
+
             const keys = identifier.split(".");
 
             for (const key of keys) {
@@ -68,22 +68,11 @@ export module DotNet {
                     parent = current;
                     current = current[key];
                 } else {
-                    return { parent, memberName: key, kind: "undefined" };
+                    return { parent, name: key };
                 }
             }
 
-            const value = current;
-            let kind: ObjectMemberKind = "undefined";
-
-            if (value !== undefined) {
-                if (typeof value === "function") {
-                    kind = "function";
-                } else {
-                    kind = "data";
-                }
-            }
-
-            return { parent, memberName: keys[keys.length - 1], kind };
+            return { parent, name: keys[keys.length - 1] };
         }
 
         public getWrappedObject() {
@@ -285,6 +274,13 @@ export module DotNet {
         JSVoidResult = 3,
     }
 
+    enum JSCallType {
+        FunctionCall = 1,
+        NewCall = 2,
+        GetValue = 3,
+        SetValue = 4
+    }
+
     /**
      * Represents the ability to dispatch calls from JavaScript to a .NET runtime.
      */
@@ -429,33 +425,79 @@ export module DotNet {
                 : stringifyArgs(this, result);
         }
 
+        parseJSCallType(identifier: string): { actualIdentifier: string, callType: JSCallType } {
+            const prefix = identifier.substring(0, 4);
+
+            switch (prefix) {
+                case "get:": return { actualIdentifier: identifier.substring(4), callType: JSCallType.GetValue };
+                case "set:": return { actualIdentifier: identifier.substring(4), callType: JSCallType.SetValue };
+                case "new:": return { actualIdentifier: identifier.substring(4), callType: JSCallType.NewCall };
+                default: return { actualIdentifier: identifier, callType: JSCallType.FunctionCall };
+            }
+        }
+
+        handleJSFunctionCall(identifier: string, member: ObjectMemberDescriptor, args: any): any {
+            const func = member.parent[member.name];
+
+            if (typeof func === "function") {
+                return func(...(args || []));
+            } else {
+                throw new Error(`The value '${identifier}' is not a function.`);
+            }
+        }
+
+        handleJSNewCall(identifier: string, member: ObjectMemberDescriptor, args: any): any {
+            const func = member.parent[member.name];
+
+            if (typeof func === "function") {
+                try {
+                    // The new call throws if the function is not constructible (e.g. an arrow function)
+                    return new func(...(args || []));
+                } catch (err) {
+                    if (err instanceof TypeError) {
+                        throw new Error(`The value '${identifier}' is not a constructor function.`);
+                    } else {
+                        throw err;
+                    }
+                }
+            } else {
+                throw new Error(`The value '${identifier}' is not a function.`);
+            }
+        }
+
+        handleJSPropertyGet(identifier: string, instance: ObjectMemberDescriptor): any {
+            const value = instance.parent[instance.name];
+            return value;
+        }
+
+        handleJSPropertySet(identifier: string, instance: ObjectMemberDescriptor, args: any) {
+            const value = args[0];
+            instance.parent[instance.name] = value;
+        }
+
         beginInvokeJSFromDotNet(asyncHandle: number, identifier: string, argsJson: string | null, resultType: JSCallResultType, targetInstanceId: number): void {
             console.log("beginInvokeJSFromDotNet", identifier, argsJson, resultType, targetInstanceId);
+
+            const { actualIdentifier, callType } = this.parseJSCallType(identifier);
 
             // Coerce synchronous functions into async ones, plus treat
             // synchronous exceptions the same as async ones
             const promise = new Promise<any>(resolve => {
                 const args = parseJsonWithRevivers(this, argsJson);
-                const member = resolveObjectMember(identifier, targetInstanceId);
+                const member = findObjectMember(actualIdentifier, targetInstanceId);
+                let valueOrPromise = null;
 
-                if (member.kind === "function") {
-                    const jsFunction = member.parent[member.memberName];
-                    const synchronousResultOrPromise = jsFunction(...(args || []));
-                    resolve(synchronousResultOrPromise);
-                } else if (member.kind === "data") {
-                    if (args) {
-                        // Set case
-                        const value = args[0];
-                        member.parent[member.memberName] = value;
-                        resolve(null);
-                    } else {
-                        // Get case
-                        const value = member.parent[member.memberName];
-                        resolve(value);
-                    }
-                } else {
-                    throw new Error(`The value '${identifier}' is not a function or property.`);
+                if (callType === JSCallType.FunctionCall) {
+                    valueOrPromise = this.handleJSFunctionCall(actualIdentifier, member, args);
+                } else if (callType === JSCallType.NewCall) {
+                    valueOrPromise = this.handleJSNewCall(actualIdentifier, member, args);
+                } else if (callType === JSCallType.GetValue) {
+                    valueOrPromise = this.handleJSPropertyGet(actualIdentifier, member);
+                } else if (callType === JSCallType.SetValue) {
+                    this.handleJSPropertySet(actualIdentifier, member, args);
                 }
+
+                resolve(valueOrPromise);
             });
 
             // We only listen for a result if the caller wants to be notified about it
@@ -595,22 +637,19 @@ export module DotNet {
         return error ? error.toString() : "null";
     }
 
-    export type ObjectMemberKind = "data" | "function" | "undefined";
-
     export interface ObjectMemberDescriptor {
         parent: any;
-        memberName: string;
-        kind: ObjectMemberKind;
+        name: string;
     }
 
-    export function resolveObjectMember(identifier: string, targetInstanceId: number): ObjectMemberDescriptor {
+    export function findObjectMember(identifier: string, targetInstanceId: number): ObjectMemberDescriptor {
         const targetInstance = cachedJSObjectsById[targetInstanceId];
 
         if (!targetInstance) {
             throw new Error(`JS object instance with ID ${targetInstanceId} does not exist (has it been disposed?).`);
         }
 
-        return targetInstance.resolveMember(identifier);
+        return targetInstance.findMember(identifier);
     }
 
     export function findJSFunction(identifier: string, targetInstanceId: number): Function {

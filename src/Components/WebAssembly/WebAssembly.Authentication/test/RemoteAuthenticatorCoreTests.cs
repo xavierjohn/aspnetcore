@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging.Testing;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Moq;
+using static Microsoft.AspNetCore.Components.WebAssembly.Authentication.RemoteAuthenticationServiceTests;
 
 namespace Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
@@ -774,16 +775,17 @@ public class RemoteAuthenticatorCoreTests
         public override Task<bool> ValidateSignOutState() => Task.FromResult(SignOutState);
     }
 
-    private class TestJsRuntime : IJSRuntime
+    private class TestJsRuntime : TestJSRuntimeBase
     {
         public (string identifier, object[] args) LastInvocation { get; set; }
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object[] args)
+
+        public override ValueTask<TValue> InvokeAsync<TValue>(string identifier, object[] args)
         {
             LastInvocation = (identifier, args);
             return default;
         }
 
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object[] args)
+        public override ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object[] args)
         {
             LastInvocation = (identifier, args);
             return default;

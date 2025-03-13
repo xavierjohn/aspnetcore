@@ -14,4 +14,22 @@ internal sealed class UnsupportedJavaScriptRuntime : IJSRuntime
 
     ValueTask<TValue> IJSRuntime.InvokeAsync<TValue>(string identifier, object?[]? args)
         => throw new InvalidOperationException(Message);
+
+    public ValueTask<IJSObjectReference> NewAsync(string identifier, object?[]? args)
+        => throw new InvalidOperationException(Message);
+
+    public ValueTask<IJSObjectReference> NewAsync(string identifier, CancellationToken cancellationToken, object?[]? args)
+        => throw new InvalidOperationException(Message);
+
+    public ValueTask<TValue> GetValueAsync<TValue>(string identifier)
+        => throw new InvalidOperationException(Message);
+
+    public ValueTask<TValue> GetValueAsync<TValue>(string identifier, CancellationToken cancellationToken)
+        => throw new InvalidOperationException(Message);
+
+    public ValueTask SetValueAsync<TValue>(string identifier, TValue value)
+        => throw new InvalidOperationException(Message);
+
+    public ValueTask SetValueAsync<TValue>(string identifier, TValue value, CancellationToken cancellationToken)
+        => throw new InvalidOperationException(Message);
 }

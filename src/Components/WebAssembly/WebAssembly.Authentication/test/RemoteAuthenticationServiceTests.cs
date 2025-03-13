@@ -515,7 +515,7 @@ public class RemoteAuthenticationServiceTests
         return mock.Object;
     }
 
-    private class TestJsRuntime : IJSRuntime
+    private class TestJsRuntime : TestJSRuntimeBase
     {
         public IList<(string identifier, object[] args)> PastInvocations { get; set; } = new List<(string, object[])>();
 
@@ -531,13 +531,13 @@ public class RemoteAuthenticationServiceTests
 
         public RemoteUserAccount GetUserResult { get; set; }
 
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object[] args)
+        public override ValueTask<TValue> InvokeAsync<TValue>(string identifier, object[] args)
         {
             PastInvocations.Add((identifier, args));
             return new ValueTask<TValue>((TValue)GetInvocationResult(identifier));
         }
 
-        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object[] args)
+        public override ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object[] args)
         {
             PastInvocations.Add((identifier, args));
             return new ValueTask<TValue>((TValue)GetInvocationResult(identifier));

@@ -34,11 +34,17 @@ Welcome to your new app.
     <button class="btn btn-primary" @onclick="GetTestObjectStateViaReferenceFromProperty">Get object state via reference from property</button>
 </div>
 
+<div style="margin-top: 2em">
+    <button class="btn btn-primary" @onclick="MakeWoof">Make woof</button>
+    <span>@DogMessage</span>
+</div>
+
 @code {
     private string? Message { get; set; }
     private string? CurrentTitle { get; set; }
     private string? NewTitle { get; set; }
     private string? TestObjectDisplay { get; set; }
+    private string? DogMessage { get; set; }
 
     private async Task LogDefault()
     {
@@ -58,12 +64,12 @@ Welcome to your new app.
 
     private async Task SetDocumentTitleDirectly(string title)
     {
-        await JSRuntime.InvokeVoidAsync("document.title", title);
+        await JSRuntime.SetValueAsync("document.title", title);
     }
 
     private async Task GetDocumentTitle()
     {
-        CurrentTitle = await JSRuntime.InvokeAsync<string>("document.title");
+        CurrentTitle = await JSRuntime.GetValueAsync<string>("document.title");
     }
 
     private async Task GetTestObjectState()
@@ -86,6 +92,12 @@ Welcome to your new app.
         var numValue = await objectRef.InvokeAsync<int>("num");
         var textValue = await objectRef.InvokeAsync<string>("text");
         TestObjectDisplay = $"State via reference from property: {numValue} | {textValue}";
+    }
+
+    private async Task MakeWoof()
+    {
+        var dogRef = await JSRuntime.NewAsync("Dog", ["Igor"]);
+        DogMessage = await dogRef.InvokeAsync<string>("bark");
     }
 
     class TestObjectModel
